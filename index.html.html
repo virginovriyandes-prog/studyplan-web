@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyPlan - Media Digital Atur Waktu Belajar</title>
+    <!-- Font Bulat & Ramah Edukasi -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* === TEMA PLAYFUL PASTEL MODERN === */
+        :root {
+            --primary: #7c5cff;
+            --primary-dark: #5e3ee0;
+            --primary-hover: #6a4be6;
+            --primary-light: #f1eeff;
+            --accent-yellow: #ffd166;
+            --accent-pink: #ff8fab;
+            --accent-mint: #06d6a0;
+            --accent-sky: #4cc9f0;
+            --sidebar-bg: #ffffff;
+            --bg-color: #f5f3ff;
+            --card-bg: #ffffff;
+            --text-dark: #2b2640;
+            --text-muted: #7e789a;
+            --border-color: #ebe7ff;
+            --danger: #ff5d73;
+            --success: #10b981;
+            --warning: #ffb703;
+            --radius-lg: 28px;
+            --radius-md: 20px;
+            --shadow-soft: 0 10px 30px rgba(124, 92, 255, 0.09);
+            --shadow-hover: 0 16px 35px rgba(124, 92, 255, 0.16);
+            --transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; }
+        h1, h2, h3, h4, .brand, .auth-brand { font-family: 'Fredoka', 'Nunito', sans-serif; letter-spacing: 0.2px; }
+        body {
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(circle at 12% 18%, rgba(255, 209, 102, 0.22) 0%, transparent 28%),
+                radial-gradient(circle at 88% 82%, rgba(76, 201, 240, 0.2) 0%, transparent 30%),
+                radial-gradient(circle at 85% 15%, rgba(255, 143, 171, 0.18) 0%, transparent 25%);
+            color: var(--text-dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* === ANIMASI MASKOT & DEKORASI === */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1.5deg); }
+        }
+        @keyframes blinkEyes {
+            0%, 92%, 100% { transform: scaleY(1); }
+            96% { transform: scaleY(0.1); }
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-7deg) scale(1.08); }
+            50% { transform: rotate(7deg) scale(1.08); }
+            75% { transform: rotate(-4deg) scale(1.04); }
+        }
+        @keyframes pulseRing {
+            0% { box-shadow: 0 0 0 0 rgba(124, 92, 255, 0.35); }
+            70% { box-shadow: 0 0 0 18px rgba(124, 92, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(124, 92, 255, 0); }
+        }
+        .mascot-float { animation: floatSlow 3.4s ease-in-out infinite; }
+        .mascot-eyes { transform-origin: center 52px; animation: blinkEyes 4.2s infinite; }
+        .mascot-wiggle { animation: wiggle 0.55s ease !important; }
+
+        /* === HALAMAN AUTENTIKASI (TERPISAH: DAFTAR & LOGIN) === */
+        #auth-wrapper {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #efeaff 0%, #dcd3ff 50%, #ffeef4 100%);
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1000;
+            padding: 20px;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+        /* Gelembung Dekoratif Auth */
+        #auth-wrapper::before, #auth-wrapper::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+            filter: blur(2px);
+        }
+        #auth-wrapper::before { width: 260px; height: 260px; background: rgba(255, 209, 102, 0.35); top: -60px; left: -60px; }
+        #auth-wrapper::after { width: 300px; height: 300px; background: rgba(76, 201, 240, 0.25); bottom: -80px; right: -70px; }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 420px;
+            padding: 58px 35px 35px;
+            border-radius: 32px;
+            box-shadow: 0 24px 60px rgba(124, 92, 255, 0.18), 0 0 0 6px rgba(255, 255, 255, 0.55);
+            text-align: center;
+            display: none;
+            position: relative;
+            z-index: 2;
+            margin-top: 40px;
+            animation: fadeIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .auth-card.active { display: block; }
+        .auth-mascot-wrap {
+            position: absolute;
+            top: -58px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 110px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 28px rgba(124, 92, 255, 0.2);
+            border: 5px solid var(--primary-light);
+        }
+        .auth-brand { font-size: 30px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+        .auth-brand span { color: var(--primary); }
+        .auth-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 22px; line-height: 1.5; }
+        
+        .auth-alert {
+            display: none;
+            padding: 12px 15px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .auth-alert.error { background: #fff1f2; color: #be123c; border: 2px solid #fecdd3; display: block; }
+        .auth-alert.success { background: #ecfdf5; color: #047857; border: 2px solid #a7f3d0; display: block; }
+
+        .auth-input-group { margin-bottom: 14px; text-align: left; }
+        .auth-input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text-dark); }
+        .auth-input-group input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            outline: none;
+            transition: 0.25s;
+            font-size: 14px;
+            background: #faf9ff;
+            font-weight: 600;
+        }
+        .auth-input-group input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.14); }
+        
+        /* Tombol 3D Bouncy */
+        .btn-auth, .btn-action {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #8b6dff 0%, var(--primary) 100%);
+            color: white;
+            border: none;
+            border-bottom: 4px solid var(--primary-dark);
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            margin-top: 8px;
+        }
+        .btn-auth:hover, .btn-action:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(124, 92, 255, 0.28); }
+        .btn-auth:active, .btn-action:active { transform: translateY(2px); border-bottom-width: 2px; }
+        
+        .auth-switch { margin-top: 20px; font-size: 13.5px; color: var(--text-muted); font-weight: 600; }
+        .auth-switch a { color: var(--primary); font-weight: 800; text-decoration: none; cursor: pointer; }
+        .auth-switch a:hover { text-decoration: underline; }
+
+        /* === APLIKASI UTAMA (DASHBOARD) === */
+        #main-app { display: none; height: 100vh; width: 100%; opacity: 0; transition: opacity 0.4s ease; }
+
+        /* SIDEBAR (DESKTOP) */
+        .sidebar {
+            width: 265px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            padding: 28px 0;
+            border-right: 2px solid var(--border-color);
+            flex-shrink: 0;
+            box-shadow: 4px 0 25px rgba(124, 92, 255, 0.04);
+        }
+        .brand { font-size: 25px; font-weight: 700; color: var(--text-dark); margin-bottom: 30px; padding: 0 28px; display: flex; align-items: center; gap: 10px; }
+        .brand span { color: var(--primary); }
+        .brand-badge { width: 38px; height: 38px; background: var(--primary-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex: 1; padding: 0 16px; }
+        .nav-link {
+            padding: 13px 18px;
+            border-radius: 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14.5px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        .nav-link span { font-size: 18px; transition: transform 0.25s; }
+        .nav-link:hover { color: var(--primary); background: var(--primary-light); transform: translateX(4px); }
+        .nav-link:hover span { transform: scale(1.18) rotate(-6deg); }
+        .nav-link.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, #8b6dff, var(--primary));
+            box-shadow: 0 8px 18px rgba(124, 92, 255, 0.28);
+        }
+
+        /* Kartu Mini Maskot di Sidebar */
+        .sidebar-mascot-tip {
+            margin: 15px 16px;
+            padding: 14px;
+            background: linear-gradient(135deg, #fff8e1 0%, #fff1cc 100%);
+            border: 2px dashed #ffd166;
+            border-radius: 18px;
+            text-align: center;
+            font-size: 12px;
+            color: #7a5800;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        /* MOBILE TOPBAR */
+        .mobile-topbar { display: none; background: var(--sidebar-bg); padding: 14px 20px; border-bottom: 2px solid var(--border-color); justify-content: space-between; align-items: center; }
+
+        /* KONTEN UTAMA */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 30px 40px; position: relative; }
+        .page-section { display: none; opacity: 0; transform: translateY(15px); transition: var(--transition); max-width: 1100px; margin: 0 auto; width: 100%; padding-bottom: 45px; }
+        .page-section.active { display: block; opacity: 1; transform: translateY(0); }
+        .section-title { font-size: 19px; font-weight: 700; margin-bottom: 18px; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
+
+        /* === DASBOR & BANNER MASKOT === */
+        .banner {
+            width: 100%;
+            min-height: 205px;
+            background: linear-gradient(135deg, #8f74ff 0%, #6c4bf4 55%, #5b3ce8 100%);
+            border-radius: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 32px 38px;
+            color: white;
+            box-shadow: 0 18px 40px rgba(108, 75, 244, 0.28);
+            position: relative;
+            overflow: hidden;
+        }
+        /* Dekorasi Bintang & Lingkaran di Banner */
+        .banner::before {
+            content: '✨';
+            position: absolute;
+            top: 18px; right: 220px;
+            font-size: 24px;
+            opacity: 0.7;
+            animation: floatSlow 2.6s infinite;
+        }
+        .banner::after {
+            content: '';
+            position: absolute;
+            width: 240px; height: 240px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            right: -40px; bottom: -90px;
+        }
+        .banner-pill {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(6px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .banner-mascot-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .speech-bubble {
+            background: #ffffff;
+            color: var(--text-dark);
+            padding: 12px 16px;
+            border-radius: 18px;
+            border-bottom-right-radius: 4px;
+            font-size: 12.5px;
+            font-weight: 800;
+            max-width: 195px;
+            box-shadow: 0 10px 25px rgba(43, 38, 64, 0.18);
+            line-height: 1.4;
+            transition: transform 0.25s;
+        }
+        .banner-mascot-area:hover .speech-bubble { transform: scale(1.04); }
+
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .card-dash {
+            background: var(--card-bg);
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 2px solid var(--border-color);
+        }
+        .card-dash:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--shadow-hover); }
+        .card-dash .icon-box { height: 54px; width: 54px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; transition: transform 0.3s; }
+        .card-dash:hover .icon-box { transform: scale(1.1) rotate(-6deg); }
+        .card-dash h4 { font-size: 16px; color: var(--text-dark); margin-bottom: 3px; }
+
+        /* Kartu Pencapaian */
+        .stat-summary-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-summary-card::after {
+            content: '🌟';
+            position: absolute;
+            right: 16px; bottom: 10px;
+            font-size: 36px;
+            opacity: 0.14;
+        }
+
+        /* === WIZARD & JADWAL === */
+        .wizard-container {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .wizard-step { display: none; }
+        .wizard-step.active { display: block; animation: fadeInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(25px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .selection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 15px; margin-top: 22px; }
+        .select-card {
+            border: 2px solid var(--border-color);
+            border-bottom: 4px solid #ded8ff;
+            border-radius: 20px;
+            padding: 18px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #ffffff;
+        }
+        .select-card:hover { border-color: var(--primary); border-bottom-color: var(--primary-dark); background: var(--primary-light); transform: translateY(-4px); }
+        .select-card span { font-size: 32px; display: block; transition: transform 0.3s; }
+        .select-card:hover span { transform: scale(1.15) rotate(-5deg); }
+        .select-card h4 { font-size: 14px; font-weight: 700; margin-top: 8px; }
+        
+        .custom-mapel-box { display: none; max-width: 400px; margin: 22px auto 0; padding: 20px; background: var(--primary-light); border-radius: 20px; border: 2px dashed var(--primary); animation: fadeIn 0.3s ease; }
+        .custom-mapel-box input { width: 100%; padding: 12px 15px; border: 2px solid var(--primary); border-radius: 14px; outline: none; margin-bottom: 10px; font-weight: 600; }
+
+        .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 10px; margin-top: 20px; }
+        .btn-class {
+            padding: 11px 8px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-bottom: 4px solid #ded8ff;
+            border-radius: 14px;
+            font-weight: 800;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        .btn-class:hover { border-color: var(--primary); border-bottom-color: var(--primary-dark); color: var(--primary); background: var(--primary-light); transform: translateY(-3px); }
+        
+        .final-form { max-width: 480px; margin: 20px auto 0; display: flex; flex-direction: column; gap: 15px; }
+        .final-form input, .final-form select { padding: 13px 16px; border: 2px solid var(--border-color); border-radius: 16px; outline: none; width: 100%; font-size: 14px; background: #faf9ff; font-weight: 600; }
+        .final-form input:focus, .final-form select:focus { border-color: var(--primary); background: white; }
+        
+        .schedule-list { display: flex; flex-direction: column; gap: 14px; }
+        .schedule-item {
+            background: var(--card-bg);
+            padding: 18px 22px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-color);
+            border-left: 7px solid var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .schedule-item:hover { transform: translateY(-3px) scale(1.005); background: #faf8ff; box-shadow: var(--shadow-hover); }
+        .schedule-info h4 { font-size: 16.5px; margin-bottom: 4px; }
+        .schedule-info p { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .badge { padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+
+        /* === EVALUASI & REFLEKSI === */
+        .eval-card { background: white; padding: 28px; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); border: 2px solid var(--border-color); margin-bottom: 22px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .stat-box { background: linear-gradient(145deg, #f8f6ff, #f0ebff); padding: 22px 15px; border-radius: 20px; text-align: center; border: 2px solid var(--border-color); }
+        .stat-box h3 { font-size: 34px; color: var(--primary); margin-bottom: 4px; }
+        .reflect-form textarea { width: 100%; height: 110px; padding: 15px; border: 2px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; resize: none; font-family: inherit; outline: none; background: #faf9ff; font-weight: 600; }
+        .reflect-form select { width: 100%; padding: 13px 15px; border: 2px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; outline: none; background: #faf9ff; font-weight: 600; }
+        .reflect-form textarea:focus, .reflect-form select:focus { border-color: var(--primary); background: white; }
+
+        /* === RUANG BK === */
+        .bk-card { background: white; padding: 45px 30px; border-radius: 30px; text-align: center; box-shadow: var(--shadow-soft); border: 2px solid var(--border-color); }
+        .btn-wa {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 32px;
+            background: linear-gradient(135deg, #2ee573, #20ba5a);
+            border-bottom: 4px solid #168f43;
+            color: white;
+            text-decoration: none;
+            font-weight: 800;
+            border-radius: 18px;
+            font-size: 15px;
+            transition: 0.25s;
+            margin-top: 22px;
+        }
+        .btn-wa:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(37, 211, 102, 0.3); }
+
+        /* === MODAL TIMER + MASKOT === */
+        .timer-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.98), rgba(241,238,255,0.96));
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            padding: 20px;
+            text-align: center;
+        }
+        .timer-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .timer-circle {
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            border: 12px solid var(--primary-light);
+            background: white;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 48px; font-weight: 700; color: var(--primary);
+            margin: 16px 0 22px;
+            box-shadow: 0 15px 35px rgba(124, 92, 255, 0.15);
+            animation: pulseRing 2.4s infinite;
+        }
+        .timer-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+        .timer-btn {
+            padding: 13px 26px;
+            background: var(--primary);
+            border: none;
+            border-bottom: 4px solid rgba(0,0,0,0.18);
+            color: white;
+            border-radius: 18px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .timer-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .timer-btn:active { transform: translateY(2px); }
+
+        /* TOAST */
+        .toast {
+            position: fixed; bottom: 30px; right: 30px;
+            background: white;
+            padding: 15px 22px;
+            border-radius: 18px;
+            box-shadow: 0 14px 35px rgba(43, 38, 64, 0.16);
+            border: 2px solid var(--primary-light);
+            border-left: 6px solid var(--primary);
+            transform: translateX(160%);
+            transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1500;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex; align-items: center; gap: 10px; max-width: 90%;
+        }
+        .toast.show { transform: translateX(0); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+
+        /* === RESPONSIF MOBILE (HP) === */
+        @media (max-width: 768px) {
+            body { overflow: auto; }
+            #main-app { flex-direction: column; height: 100vh; }
+            .mobile-topbar { display: flex; }
+            .sidebar {
+                position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+                flex-direction: row; padding: 0; border-right: none;
+                border-top: 2px solid var(--border-color); z-index: 50;
+                box-shadow: 0 -6px 25px rgba(124, 92, 255, 0.08);
+            }
+            .sidebar .brand, .sidebar .logout-desktop, .sidebar .sidebar-mascot-tip { display: none; }
+            .nav-menu { flex-direction: row; justify-content: space-around; align-items: center; padding: 0 6px; gap: 0; }
+            .nav-link { flex-direction: column; gap: 3px; padding: 8px 10px; font-size: 11px; border-radius: 14px; }
+            .nav-link:hover { transform: none; }
+            .main-wrapper { padding: 18px 16px 92px 16px; }
+            .dashboard-grid, .cards-grid, .stat-grid { grid-template-columns: 1fr; }
+            .banner { flex-direction: column; text-align: center; padding: 26px 20px; }
+            .banner-mascot-area { flex-direction: column-reverse; }
+            .speech-bubble { border-bottom-right-radius: 18px; max-width: 240px; }
+            .wizard-container { padding: 22px 16px; }
+            .schedule-item { flex-direction: column; align-items: flex-start; }
+            .toast { bottom: 85px; right: 15px; left: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- === HALAMAN AUTENTIKASI (TERPISAH) === -->
+    <div id="auth-wrapper">
+        
+        <!-- 1. HALAMAN DAFTAR (SIGN UP) -->
+        <div class="auth-card" id="cardRegister">
+            <div class="auth-mascot-wrap">
+                <!-- Maskot Owl Mini -->
+                <svg width="78" height="78" viewBox="0 0 120 120" class="mascot-float" aria-label="Maskot Owl">
+                    <ellipse cx="60" cy="70" rx="38" ry="36" fill="#7c5cff"/>
+                    <ellipse cx="60" cy="78" rx="26" ry="24" fill="#f5f3ff"/>
+                    <path d="M28 45 L36 25 L50 38 Z" fill="#7c5cff"/>
+                    <path d="M92 45 L84 25 L70 38 Z" fill="#7c5cff"/>
+                    <ellipse cx="22" cy="72" rx="10" ry="18" transform="rotate(18 22 72)" fill="#6a4be6"/>
+                    <ellipse cx="98" cy="72" rx="10" ry="18" transform="rotate(-18 98 72)" fill="#6a4be6"/>
+                    <g class="mascot-eyes">
+                        <circle cx="45" cy="56" r="11" fill="#ffffff"/>
+                        <circle cx="75" cy="56" r="11" fill="#ffffff"/>
+                        <circle cx="46" cy="56" r="5.5" fill="#2b2640"/>
+                        <circle cx="74" cy="56" r="5.5" fill="#2b2640"/>
+                        <circle cx="48" cy="53.5" r="2" fill="#ffffff"/>
+                        <circle cx="76" cy="53.5" r="2" fill="#ffffff"/>
+                    </g>
+                    <circle cx="33" cy="66" r="5" fill="#ff8fab" opacity="0.7"/>
+                    <circle cx="87" cy="66" r="5" fill="#ff8fab" opacity="0.7"/>
+                    <polygon points="54,62 66,62 60,70" fill="#ffb703"/>
+                    <path d="M40 28 L60 18 L80 28 L60 36 Z" fill="#2b2640"/>
+                    <circle cx="80" cy="34" r="3" fill="#ffd166"/>
+                </svg>
+            </div>
+            <div class="auth-brand">Study<span>Plan</span></div>
+            <p class="auth-subtitle">Halo! Aku Owl 🦉 Yuk buat akun baru dulu biar jadwal belajarmu rapi.</p>
+            <div id="regAlert" class="auth-alert"></div>
+            
+            <form id="formRegister" onsubmit="doRegister(event)">
+                <div class="auth-input-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="regNama" placeholder="Contoh: Nama Pengguna" required>
+                </div>
+                <div class="auth-input-group">
+                    <label>Email Siswa</label>
+                    <input type="email" id="regEmail" placeholder="siswa@sekolah.com" required>
+                </div>
+                <div class="auth-input-group">
+                    <label>Kata Sandi</label>
+                    <input type="password" id="regPass" placeholder="Minimal 4 karakter" minlength="4" required>
+                </div>
+                <button type="submit" class="btn-auth">✨ Daftar Akun</button>
+            </form>
+
+            <div class="auth-switch">
+                Sudah pernah mendaftar? <a onclick="showAuthCard('login')">Masuk di sini</a>
+            </div>
+        </div>
+
+        <!-- 2. HALAMAN LOGIN (MASUK) -->
+        <div class="auth-card" id="cardLogin">
+            <div class="auth-mascot-wrap">
+                <svg width="78" height="78" viewBox="0 0 120 120" class="mascot-float" aria-label="Maskot Owl">
+                    <ellipse cx="60" cy="70" rx="38" ry="36" fill="#7c5cff"/>
+                    <ellipse cx="60" cy="78" rx="26" ry="24" fill="#f5f3ff"/>
+                    <path d="M28 45 L36 25 L50 38 Z" fill="#7c5cff"/>
+                    <path d="M92 45 L84 25 L70 38 Z" fill="#7c5cff"/>
+                    <ellipse cx="22" cy="72" rx="10" ry="18" transform="rotate(18 22 72)" fill="#6a4be6"/>
+                    <ellipse cx="98" cy="72" rx="10" ry="18" transform="rotate(-18 98 72)" fill="#6a4be6"/>
+                    <g class="mascot-eyes">
+                        <circle cx="45" cy="56" r="11" fill="#ffffff"/>
+                        <circle cx="75" cy="56" r="11" fill="#ffffff"/>
+                        <circle cx="46" cy="56" r="5.5" fill="#2b2640"/>
+                        <circle cx="74" cy="56" r="5.5" fill="#2b2640"/>
+                        <circle cx="48" cy="53.5" r="2" fill="#ffffff"/>
+                        <circle cx="76" cy="53.5" r="2" fill="#ffffff"/>
+                    </g>
+                    <circle cx="33" cy="66" r="5" fill="#ff8fab" opacity="0.7"/>
+                    <circle cx="87" cy="66" r="5" fill="#ff8fab" opacity="0.7"/>
+                    <polygon points="54,62 66,62 60,70" fill="#ffb703"/>
+                    <path d="M40 28 L60 18 L80 28 L60 36 Z" fill="#2b2640"/>
+                    <circle cx="80" cy="34" r="3" fill="#ffd166"/>
+                </svg>
+            </div>
+            <div class="auth-brand">Study<span>Plan</span></div>
+            <p class="auth-subtitle">Selamat datang kembali! Owl sudah siap menemanimu fokus hari ini.</p>
+            <div id="loginAlert" class="auth-alert"></div>
+
+            <form id="formLogin" onsubmit="doLogin(event)">
+                <div class="auth-input-group">
+                    <label>Email Siswa</label>
+                    <input type="email" id="loginEmail" placeholder="siswa@sekolah.com" required>
+                </div>
+                <div class="auth-input-group">
+                    <label>Kata Sandi</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-auth">🚀 Masuk ke Dasbor</button>
+            </form>
+
+            <div class="auth-switch">
+                Belum punya akun? <a onclick="showAuthCard('register')">Daftar terlebih dahulu</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- === APLIKASI UTAMA === -->
+    <div id="main-app">
+        
+        <!-- TOPBAR KHUSUS MOBILE -->
+        <div class="mobile-topbar">
+            <div style="font-family:'Fredoka',sans-serif; font-size: 21px; font-weight: 700;">🦉 Study<span style="color:var(--primary)">Plan</span></div>
+            <button onclick="doLogout()" style="background:#fff1f2; color:#ff5d73; border:2px solid #fecdd3; padding:6px 12px; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">🚪 Keluar</button>
+        </div>
+
+        <!-- SIDEBAR -->
+        <nav class="sidebar">
+            <div class="brand">
+                <div class="brand-badge">🦉</div>
+                <div>Study<span>Plan</span></div>
+            </div>
+            <div class="nav-menu">
+                <a class="nav-link active" onclick="switchPage('dasbor', this)"><span>🏠</span> Dasbor</a>
+                <a class="nav-link" onclick="switchPage('jadwal', this)"><span>📅</span> Jadwal</a>
+                <a class="nav-link" onclick="switchPage('evaluasi', this)"><span>📊</span> Evaluasi</a>
+                <a class="nav-link" onclick="switchPage('tips', this)"><span>💡</span> Tips</a>
+                <a class="nav-link" onclick="switchPage('ruangbk', this)"><span>💬</span> Ruang BK</a>
+            </div>
+            <div class="sidebar-mascot-tip">
+                ✨ "15 menit fokus hari ini lebih hebat dari 0 menit menunggu mood!" — Owl
+            </div>
+            <div class="logout-desktop" style="padding: 0 16px;">
+                <a class="nav-link" style="color: var(--danger);" onclick="doLogout()"><span>🚪</span> Keluar Akun</a>
+            </div>
+        </nav>
+
+        <!-- KONTEN UTAMA -->
+        <div class="main-wrapper">
+            
+            <!-- 1. DASBOR -->
+            <section id="dasbor" class="page-section active">
+                <div class="banner">
+                    <div style="z-index: 2;">
+                        <div class="banner-pill">🌟 TEMAN BELAJAR REGULASI DIRI</div>
+                        <h1 id="userGreeting" style="font-size: 32px; margin-bottom: 8px; font-weight: 700;">Hai, Siswa!</h1>
+                        <p style="font-size: 14.5px; opacity: 0.94; max-width: 440px; line-height: 1.5;">Siap menaklukkan tugas hari ini? Jadwalkan waktumu dan mulai fokus tanpa distraksi bareng Owl!</p>
+                    </div>
+                    <!-- Maskot Interaktif di Banner -->
+                    <div class="banner-mascot-area" onclick="sapaMaskot()" title="Klik Owl untuk semangat!">
+                        <div class="speech-bubble" id="mascotQuote">Hai! Klik aku kalau butuh penyemangat ya ✨</div>
+                        <svg id="heroMascot" width="118" height="118" viewBox="0 0 120 120" class="mascot-float" aria-label="Maskot Owl">
+                            <ellipse cx="60" cy="70" rx="38" ry="36" fill="#ffd166"/>
+                            <ellipse cx="60" cy="78" rx="26" ry="24" fill="#fffdf5"/>
+                            <path d="M28 45 L36 24 L50 38 Z" fill="#ffd166"/>
+                            <path d="M92 45 L84 24 L70 38 Z" fill="#ffd166"/>
+                            <ellipse cx="22" cy="72" rx="10" ry="18" transform="rotate(20 22 72)" fill="#f4b942"/>
+                            <ellipse cx="98" cy="72" rx="10" ry="18" transform="rotate(-20 98 72)" fill="#f4b942"/>
+                            <g class="mascot-eyes">
+                                <circle cx="45" cy="56" r="11.5" fill="#ffffff"/>
+                                <circle cx="75" cy="56" r="11.5" fill="#ffffff"/>
+                                <circle cx="46" cy="56" r="5.5" fill="#2b2640"/>
+                                <circle cx="74" cy="56" r="5.5" fill="#2b2640"/>
+                                <circle cx="48" cy="53.5" r="2.2" fill="#ffffff"/>
+                                <circle cx="76" cy="53.5" r="2.2" fill="#ffffff"/>
+                                <!-- Kacamata Lucu -->
+                                <circle cx="45" cy="56" r="13" fill="none" stroke="#2b2640" stroke-width="2.5"/>
+                                <circle cx="75" cy="56" r="13" fill="none" stroke="#2b2640" stroke-width="2.5"/>
+                                <line x1="58" y1="56" x2="62" y2="56" stroke="#2b2640" stroke-width="2.5"/>
+                            </g>
+                            <circle cx="31" cy="68" r="5" fill="#ff8fab" opacity="0.75"/>
+                            <circle cx="89" cy="68" r="5" fill="#ff8fab" opacity="0.75"/>
+                            <polygon points="54,63 66,63 60,71" fill="#ff7b00"/>
+                            <ellipse cx="47" cy="105" rx="7" ry="4" fill="#ff7b00"/>
+                            <ellipse cx="73" cy="105" rx="7" ry="4" fill="#ff7b00"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div>
+                        <div class="section-title">🚀 Akses Cepat</div>
+                        <div class="cards-grid">
+                            <div class="card-dash" onclick="switchPage('jadwal', document.querySelectorAll('.nav-link')[1])">
+                                <div class="icon-box" style="background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0284c7;">⏱️</div>
+                                <div><h4>Sesi Fokus</h4><p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Atur Jadwal & Timer</p></div>
+                            </div>
+                            <div class="card-dash" onclick="switchPage('evaluasi', document.querySelectorAll('.nav-link')[2])">
+                                <div class="icon-box" style="background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #9333ea;">📝</div>
+                                <div><h4>Refleksi</h4><p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Catat Progres Harian</p></div>
+                            </div>
+                            <div class="card-dash" onclick="switchPage('tips', document.querySelectorAll('.nav-link')[3])">
+                                <div class="icon-box" style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706;">💡</div>
+                                <div><h4>Tips Fokus</h4><p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Jurus Anti Menunda</p></div>
+                            </div>
+                            <div class="card-dash" onclick="switchPage('ruangbk', document.querySelectorAll('.nav-link')[4])">
+                                <div class="icon-box" style="background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a;">💬</div>
+                                <div><h4>Ruang BK</h4><p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Konsultasi WhatsApp</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="section-title">🏆 Pencapaian Aktual</div>
+                        <div class="stat-summary-card">
+                            <div style="display: flex; justify-content: space-between; align-items:center; border-bottom: 2px dashed var(--border-color); padding-bottom: 16px; margin-bottom: 16px;">
+                                <span style="font-weight: 700; color: var(--text-muted);">⏳ Menit Fokus</span>
+                                <strong style="color: var(--primary); font-size: 20px; font-family:'Fredoka',sans-serif;" id="dashTotalMenit">0 Menit</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items:center;">
+                                <span style="font-weight: 700; color: var(--text-muted);">✅ Tugas Selesai</span>
+                                <strong style="color: var(--success); font-size: 20px; font-family:'Fredoka',sans-serif;" id="dashTotalTugas">0 Tugas</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. JADWAL & PRIORITAS -->
+            <section id="jadwal" class="page-section">
+                <div class="wizard-container">
+                    <!-- Step 1: Klasifikasi -->
+                    <div class="wizard-step active" id="step-1">
+                        <h2 style="text-align: center; margin-bottom: 6px; font-size: 24px;">🎯 Pilih Klasifikasi Pelajaran</h2>
+                        <p style="text-align: center; color: var(--text-muted); font-size: 14px;">Klik salah satu kelompok untuk mulai menyusun jadwal belajarmu.</p>
+                        <div class="selection-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                            <div class="select-card" onclick="pilihJurusan('IPA')"><span>🔬</span><h4>Kelompok IPA</h4></div>
+                            <div class="select-card" onclick="pilihJurusan('IPS')"><span>🧭</span><h4>Kelompok IPS</h4></div>
+                            <div class="select-card" onclick="pilihJurusan('Umum')"><span>📚</span><h4>Umum / Lainnya</h4></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Mata Pelajaran -->
+                    <div class="wizard-step" id="step-2">
+                        <button style="background:var(--primary-light); border:none; color:var(--primary); padding:7px 14px; border-radius:10px; cursor:pointer; font-weight:800; margin-bottom: 14px;" onclick="goToStep(1)">← Kembali</button>
+                        <h2 style="text-align: center; margin-bottom: 5px; font-size: 24px;">📖 Pilih Mata Pelajaran</h2>
+                        <div class="selection-grid" id="mapelGridContainer"></div>
+                        <div class="custom-mapel-box" id="boxLainnya">
+                            <label style="font-weight:800; font-size:14px; display:block; margin-bottom:8px;">Masukkan Nama Pelajaran:</label>
+                            <input type="text" id="customMapelInput" placeholder="Ketik di sini...">
+                            <button class="btn-action" style="padding: 11px;" onclick="simpanCustomMapel()">Lanjut ke Kelas →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Kelas -->
+                    <div class="wizard-step" id="step-3">
+                        <button style="background:var(--primary-light); border:none; color:var(--primary); padding:7px 14px; border-radius:10px; cursor:pointer; font-weight:800; margin-bottom: 14px;" onclick="goToStep(2)">← Kembali</button>
+                        <h2 style="text-align: center; margin-bottom: 5px; font-size: 24px;">🏫 Pilih Kelasmu</h2>
+                        <div class="class-grid" id="classGridContainer"></div>
+                    </div>
+
+                    <!-- Step 4: Waktu & Durasi -->
+                    <div class="wizard-step" id="step-4">
+                        <button style="background:var(--primary-light); border:none; color:var(--primary); padding:7px 14px; border-radius:10px; cursor:pointer; font-weight:800; margin-bottom: 14px;" onclick="goToStep(3)">← Kembali</button>
+                        <h2 style="text-align: center; margin-bottom: 5px; font-size: 24px;">⏰ Atur Waktu & Target</h2>
+                        <div class="final-form">
+                            <div><label style="font-size: 13px; font-weight: 800; display:block; margin-bottom:5px;">Waktu Mulai</label><input type="datetime-local" id="waktuInput" required></div>
+                            <div><label style="font-size: 13px; font-weight: 800; display:block; margin-bottom:5px;">Durasi Belajar (Menit)</label><input type="number" id="durasiInput" min="1" placeholder="Contoh: 30" required></div>
+                            <div>
+                                <label style="font-size: 13px; font-weight: 800; display:block; margin-bottom:5px;">Tingkat Prioritas</label>
+                                <select id="prioritasInput">
+                                    <option value="Tinggi">🔴 Tinggi (Mendesak)</option>
+                                    <option value="Sedang">🟡 Sedang (Penting)</option>
+                                    <option value="Rendah">🟢 Rendah (Bisa Nanti)</option>
+                                </select>
+                            </div>
+                            <button class="btn-action" onclick="simpanJadwalAkhir()">✨ Selesaikan & Simpan Jadwal</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">📋 Jadwal Mendatang (Klik untuk Mulai Timer)</div>
+                <div class="schedule-list" id="jadwalList"></div>
+            </section>
+
+            <!-- 3. EVALUASI & REFLEKSI -->
+            <section id="evaluasi" class="page-section">
+                <div class="eval-card">
+                    <h2 style="margin-bottom: 18px;">📊 Laporan Capaian Aktual</h2>
+                    <div class="stat-grid">
+                        <div class="stat-box"><h3 id="statTugas">0</h3><p style="font-size: 13px; color: var(--text-muted); font-weight: 700;">Tugas Selesai</p></div>
+                        <div class="stat-box"><h3 id="statFokus">0</h3><p style="font-size: 13px; color: var(--text-muted); font-weight: 700;">Menit Fokus</p></div>
+                        <div class="stat-box"><h3 id="statMaksimal">0%</h3><p style="font-size: 13px; color: var(--text-muted); font-weight: 700;">Skor Regulasi</p></div>
+                    </div>
+                </div>
+
+                <div class="eval-card">
+                    <h2 style="margin-bottom: 15px;">💖 Refleksi Belajar Harian</h2>
+                    <div class="reflect-form">
+                        <label style="font-weight: 800; font-size: 14px; display:block; margin-bottom: 6px;">Seberapa maksimal fokusmu hari ini?</label>
+                        <select id="refleksiTingkat">
+                            <option value="Sangat Maksimal">🌟 Sangat Maksimal (Minim Distraksi)</option>
+                            <option value="Cukup">🙂 Cukup (Masih ada distraksi HP)</option>
+                            <option value="Kurang">😅 Kurang (Sulit konsentrasi)</option>
+                        </select>
+
+                        <label style="font-weight: 800; font-size: 14px; display:block; margin-bottom: 6px;">Apa tantangan terbesarmu saat sesi belajar tadi?</label>
+                        <textarea id="refleksiCatatan" placeholder="Ceritakan kendalamu di sini..."></textarea>
+                        
+                        <button class="btn-action" style="width: auto; padding: 13px 28px;" onclick="simpanRefleksi()">💾 Simpan Refleksi</button>
+                    </div>
+                    <div id="riwayatRefleksi" style="margin-top: 22px;"></div>
+                </div>
+            </section>
+
+            <!-- 4. TIPS & TRIK FOKUS -->
+            <section id="tips" class="page-section">
+                <div class="section-title">💡 Tips & Trik Regulasi Diri ala Owl</div>
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="card-dash" style="cursor: default;">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #ffe4e6, #fecdd3); color: #e11d48;">🍅</div>
+                        <div><h4>Teknik Pomodoro</h4><p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; font-weight:600;">Belajar fokus 25–30 menit, lalu ambil jeda istirahat 10 menit agar otak tidak cepat lelah.</p></div>
+                    </div>
+                    <div class="card-dash" style="cursor: default;">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">📵</div>
+                        <div><h4>Mode Jangan Ganggu (DND)</h4><p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; font-weight:600;">Matikan notifikasi media sosial dan jauhkan HP dari jangkauan tangan sebelum menekan tombol Mulai Timer.</p></div>
+                    </div>
+                    <div class="card-dash" style="cursor: default;">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #ccfbf1, #99f6e4); color: #0f766e;">🍰</div>
+                        <div><h4>Pecah Tugas Jadi Kecil</h4><p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; font-weight:600;">Jangan langsung memikirkan seluruh bab. Mulai dari 2 soal dulu atau 15 menit pertama untuk melawan rasa malas.</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. RUANG BK -->
+            <section id="ruangbk" class="page-section">
+                <div class="bk-card">
+                    <div style="font-size: 62px; margin-bottom: 14px;">👩‍🏫</div>
+                    <h2 style="margin-bottom: 10px; font-size: 26px;">Layanan Bimbingan Konseling</h2>
+                    <p style="color: var(--text-muted); line-height: 1.65; max-width: 550px; margin: 0 auto; font-size: 14.5px; font-weight: 600;">
+                        Jika kamu merasa kesulitan mengatur waktu, kehilangan motivasi, atau ingin membahas hasil refleksi belajarmu, Guru BK siap mendengarkan tanpa menghakimi. Privasi percakapanmu terjamin.
+                    </p>
+                    <a href="https://wa.me/6283129582216?text=Halo%20Ibu/Bapak%20Guru%20BK,%20saya%20ingin%20berkonsultasi%20mengenai%20manajemen%20waktu%20belajar%20saya%20di%20StudyPlan." target="_blank" class="btn-wa">
+                        <span>💬</span> Hubungi Guru BK via WhatsApp
+                    </a>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- MODAL TIMER + MASKOT -->
+        <div class="timer-overlay" id="timerModal">
+            <button style="position: absolute; top: 25px; right: 30px; background: var(--primary-light); border: none; width:42px; height:42px; border-radius:50%; font-size: 20px; cursor: pointer; color: var(--primary); font-weight:bold;" onclick="closeTimer()">✕</button>
+            <svg width="82" height="82" viewBox="0 0 120 120" class="mascot-float" style="margin-bottom: 6px;">
+                <ellipse cx="60" cy="70" rx="38" ry="36" fill="#7c5cff"/>
+                <ellipse cx="60" cy="78" rx="26" ry="24" fill="#f5f3ff"/>
+                <path d="M28 45 L36 25 L50 38 Z" fill="#7c5cff"/>
+                <path d="M92 45 L84 25 L70 38 Z" fill="#7c5cff"/>
+                <g class="mascot-eyes">
+                    <circle cx="45" cy="56" r="11" fill="#ffffff"/>
+                    <circle cx="75" cy="56" r="11" fill="#ffffff"/>
+                    <circle cx="46" cy="56" r="5.5" fill="#2b2640"/>
+                    <circle cx="74" cy="56" r="5.5" fill="#2b2640"/>
+                    <circle cx="48" cy="53.5" r="2" fill="#ffffff"/>
+                    <circle cx="76" cy="53.5" r="2" fill="#ffffff"/>
+                </g>
+                <circle cx="33" cy="66" r="5" fill="#ff8fab" opacity="0.7"/>
+                <circle cx="87" cy="66" r="5" fill="#ff8fab" opacity="0.7"/>
+                <polygon points="54,62 66,62 60,70" fill="#ffb703"/>
+            </svg>
+            <h2 id="timerJudul" style="margin-bottom: 4px; font-size: 28px;">Matematika</h2>
+            <p id="timerStatus" style="color: var(--text-muted); font-weight: 700;">Sesi Fokus</p>
+            <div class="timer-circle" id="timerDisplay">25:00</div>
+            <div class="timer-controls">
+                <button class="timer-btn" id="btnStartPause" onclick="toggleTimer()">Mulai</button>
+                <button class="timer-btn" style="background: var(--warning); color:#4a3200;" onclick="mulaiIstirahat()">☕ Istirahat 10 Menit</button>
+                <button class="timer-btn" style="background: var(--success);" onclick="selesaikanTugas()">✅ Selesai & Catat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFIKASI -->
+    <div class="toast" id="toastNotif">🔔 <span>Notifikasi</span></div>
+
+    <!-- === JAVASCRIPT LOGIC (STRUKTUR TETAP SAMA) === -->
+    <script>
+        // --- INTERAKSI LUCU MASKOT (TAMBAHAN VISUAL SAJA) ---
+        const ucapanOwl = [
+            "Pelan-pelan aja, yang penting mulai dulu! 🦉✨",
+            "Jauhkan HP 15 menit, kamu pasti bisa! 📵💪",
+            "Satu tugas selesai = satu kemenangan kecil! 🏆",
+            "Jangan lupa minum air & istirahat 10 menit ya! 💧",
+            "Semangat! Owl bangga sama usahamu hari ini! 🌟"
+        ];
+        function sapaMaskot() {
+            const owl = document.getElementById('heroMascot');
+            const bubble = document.getElementById('mascotQuote');
+            owl.classList.remove('mascot-wiggle');
+            void owl.offsetWidth;
+            owl.classList.add('mascot-wiggle');
+            bubble.innerText = ucapanOwl[Math.floor(Math.random() * ucapanOwl.length)];
+        }
+
+        // --- 1. STORAGE & AUTH SYSTEM (STRICT: DAFTAR DULU BARU LOGIN) ---
+        const USERS_KEY = 'studyplan_users';
+        const SESSION_KEY = 'studyplan_session';
+        let currentUser = null;
+        let userData = { schedules: [], stats: { tugasSelesai: 0, menitFokus: 0 }, reflections: [] };
+
+        function getUsers() {
+            return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        }
+
+        function showAuthCard(mode, alertMsg = '', alertType = '') {
+            document.getElementById('cardRegister').classList.remove('active');
+            document.getElementById('cardLogin').classList.remove('active');
+            document.getElementById('regAlert').className = 'auth-alert';
+            document.getElementById('loginAlert').className = 'auth-alert';
+
+            if (mode === 'register') {
+                document.getElementById('cardRegister').classList.add('active');
+                if (alertMsg) {
+                    const el = document.getElementById('regAlert');
+                    el.innerText = alertMsg; el.className = `auth-alert ${alertType}`;
+                }
+            } else {
+                document.getElementById('cardLogin').classList.add('active');
+                if (alertMsg) {
+                    const el = document.getElementById('loginAlert');
+                    el.innerText = alertMsg; el.className = `auth-alert ${alertType}`;
+                }
+            }
+        }
+
+        function doRegister(e) {
+            e.preventDefault();
+            const nama = document.getElementById('regNama').value.trim();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('regPass').value;
+
+            const users = getUsers();
+            if (users.some(u => u.email === email)) {
+                showAuthCard('register', 'Email ini sudah terdaftar! Silakan langsung masuk.', 'error');
+                return;
+            }
+
+            users.push({ nama, email, pass });
+            saveUsers(users);
+            document.getElementById('formRegister').reset();
+
+            document.getElementById('loginEmail').value = email;
+            showAuthCard('login', 'Akun berhasil didaftarkan! Silakan masuk dengan email dan sandimu.', 'success');
+        }
+
+        function doLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('loginPass').value;
+
+            const users = getUsers();
+            const foundUser = users.find(u => u.email === email);
+
+            if (!foundUser) {
+                showAuthCard('login', 'Akses ditolak! Email belum terdaftar. Kamu wajib mendaftar akun terlebih dahulu.', 'error');
+                return;
+            }
+
+            if (foundUser.pass !== pass) {
+                showAuthCard('login', 'Kata sandi salah! Silakan coba lagi.', 'error');
+                return;
+            }
+
+            localStorage.setItem(SESSION_KEY, JSON.stringify(foundUser));
+            document.getElementById('formLogin').reset();
+            startApp(foundUser);
+        }
+
+        function startApp(user) {
+            currentUser = user;
+            loadUserData();
+
+            const authWrap = document.getElementById('auth-wrapper');
+            const mainApp = document.getElementById('main-app');
+            authWrap.style.opacity = '0';
+            setTimeout(() => {
+                authWrap.style.display = 'none';
+                mainApp.style.display = 'flex';
+                document.getElementById('userGreeting').innerText = `Hai, ${currentUser.nama}!`;
+                void mainApp.offsetWidth;
+                mainApp.style.opacity = '1';
+
+                switchPage('dasbor', document.querySelectorAll('.nav-link')[0]);
+                renderJadwal();
+                renderRefleksi();
+                updateStatDisplay();
+            }, 300);
+        }
+
+        function doLogout() {
+            localStorage.removeItem(SESSION_KEY);
+            currentUser = null;
+            clearInterval(timerInterval);
+
+            const authWrap = document.getElementById('auth-wrapper');
+            const mainApp = document.getElementById('main-app');
+            mainApp.style.opacity = '0';
+            setTimeout(() => {
+                mainApp.style.display = 'none';
+                authWrap.style.display = 'flex';
+                void authWrap.offsetWidth;
+                authWrap.style.opacity = '1';
+                showAuthCard('login', 'Kamu berhasil keluar dari akun.', 'success');
+            }, 300);
+        }
+
+        // --- 2. PER-USER DATA PERSISTENCE ---
+        function getDataKey() { return `studyplan_data_${currentUser.email}`; }
+
+        function loadUserData() {
+            const raw = localStorage.getItem(getDataKey());
+            if (raw) {
+                userData = JSON.parse(raw);
+            } else {
+                userData = { schedules: [], stats: { tugasSelesai: 0, menitFokus: 0 }, reflections: [] };
+            }
+        }
+
+        function saveUserData() {
+            if (!currentUser) return;
+            localStorage.setItem(getDataKey(), JSON.stringify(userData));
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedSession = localStorage.getItem(SESSION_KEY);
+            if (savedSession) {
+                startApp(JSON.parse(savedSession));
+            } else {
+                const users = getUsers();
+                showAuthCard(users.length === 0 ? 'register' : 'login');
+            }
+        });
+
+        // --- 3. NAVIGASI UTAMA ---
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            if (element) element.classList.add('active');
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+                section.style.opacity = '0'; section.style.transform = 'translateY(15px)';
+            });
+            const target = document.getElementById(pageId);
+            target.classList.add('active');
+            setTimeout(() => { target.style.opacity = '1'; target.style.transform = 'translateY(0)'; }, 10);
+            updateStatDisplay();
+        }
+
+        // --- 4. WIZARD: JURUSAN, MAPEL, KELAS ---
+        const mapelData = {
+            'IPA': [
+                { nama: 'Matematika', icon: '📐' }, { nama: 'Fisika', icon: '🍎' },
+                { nama: 'Kimia', icon: '🧪' }, { nama: 'Biologi', icon: '🧬' }
+            ],
+            'IPS': [
+                { nama: 'Geografi', icon: '🌍' }, { nama: 'Ekonomi', icon: '📈' },
+                { nama: 'Sosiologi', icon: '🤝' }, { nama: 'Sejarah', icon: '🏛️' }
+            ],
+            'Umum': [
+                { nama: 'B. Indonesia', icon: '📖' }, { nama: 'B. Inggris', icon: '🗣️' },
+                { nama: 'PAI / Agama', icon: '🕌' }, { nama: 'PKN', icon: '⚖️' },
+                { nama: 'Lainnya', icon: '✍️' }
+            ]
+        };
+
+        let formData = { mapel: '', kelas: '' };
+
+        function goToStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            document.getElementById('boxLainnya').style.display = 'none';
+        }
+
+        function pilihJurusan(jurusan) {
+            const container = document.getElementById('mapelGridContainer');
+            container.innerHTML = '';
+            mapelData[jurusan].forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'select-card';
+                div.onclick = item.nama === 'Lainnya' ? () => tampilkanInputLainnya() : () => pilihData('mapel', item.nama, 3);
+                div.innerHTML = `<span>${item.icon}</span><h4>${item.nama}</h4>`;
+                container.appendChild(div);
+            });
+            goToStep(2);
+        }
+
+        function pilihData(kunci, nilai, nextStep) { formData[kunci] = nilai; goToStep(nextStep); }
+
+        function tampilkanInputLainnya() {
+            const box = document.getElementById('boxLainnya');
+            box.style.display = box.style.display === 'block' ? 'none' : 'block';
+            document.getElementById('customMapelInput').focus();
+        }
+
+        function simpanCustomMapel() {
+            const inputVal = document.getElementById('customMapelInput').value.trim();
+            if (!inputVal) { alert("Nama pelajaran tidak boleh kosong!"); return; }
+            pilihData('mapel', inputVal, 3);
+            document.getElementById('customMapelInput').value = '';
+        }
+
+        const classContainer = document.getElementById('classGridContainer');
+        [10, 11, 12].forEach(t => {
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(g => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-class'; btn.innerText = `${t}${g}`;
+                btn.onclick = () => pilihData('kelas', `${t}${g}`, 4);
+                classContainer.appendChild(btn);
+            });
+        });
+
+        // --- 5. SIMPAN & RENDER JADWAL ---
+        function simpanJadwalAkhir() {
+            const waktu = document.getElementById('waktuInput').value;
+            const durasi = parseInt(document.getElementById('durasiInput').value);
+            const prioritas = document.getElementById('prioritasInput').value;
+            
+            if (!waktu || isNaN(durasi) || durasi < 1) { alert("Lengkapi waktu dan durasi belajar!"); return; }
+
+            userData.schedules.push({
+                id: Date.now(), mapel: formData.mapel, kelas: formData.kelas,
+                waktuISO: new Date(waktu).toISOString(), durasi: durasi, prioritas: prioritas, notified: false
+            });
+            
+            saveUserData();
+            renderJadwal();
+            document.getElementById('waktuInput').value = '';
+            document.getElementById('durasiInput').value = '';
+            goToStep(1);
+            showToast("Jadwal berhasil disimpan!");
+        }
+
+        function renderJadwal() {
+            const list = document.getElementById('jadwalList');
+            list.innerHTML = '';
+            if (userData.schedules.length === 0) {
+                list.innerHTML = `<div style="text-align: center; padding: 34px; color: var(--text-muted); background: white; border: 2px dashed var(--border-color); border-radius: 22px; font-weight:700;">🍃 Belum ada jadwal aktif. Yuk susun di atas!</div>`;
+                return;
+            }
+            userData.schedules.sort((a, b) => new Date(a.waktuISO) - new Date(b.waktuISO));
+            userData.schedules.forEach(item => {
+                const w = new Date(item.waktuISO);
+                const fWaktu = `${w.getDate()}/${w.getMonth()+1} - ${String(w.getHours()).padStart(2,'0')}:${String(w.getMinutes()).padStart(2,'0')}`;
+                let color = item.prioritas === 'Tinggi' ? '#ff5d73' : (item.prioritas === 'Sedang' ? '#f59e0b' : '#10b981');
+                
+                const div = document.createElement('div');
+                div.className = 'schedule-item'; div.style.borderLeftColor = color;
+                div.onclick = () => openTimer(item);
+                div.innerHTML = `
+                    <div class="schedule-info">
+                        <h4>📚 ${item.mapel} (Kelas ${item.kelas})</h4>
+                        <p>⏰ Mulai: ${fWaktu} | ⏳ Durasi: ${item.durasi} Menit</p>
+                    </div>
+                    <div class="badge" style="color:${color}; background:${color}1f">Prioritas ${item.prioritas}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // --- 6. NOTIFIKASI H-5 MENIT & SUARA ALARM ---
+        setInterval(() => {
+            if (!currentUser) return;
+            const now = new Date();
+            let updated = false;
+            userData.schedules.forEach(item => {
+                if (!item.notified) {
+                    const diffMins = Math.floor((new Date(item.waktuISO) - now) / 60000);
+                    if (diffMins <= 5 && diffMins >= 0) {
+                        showToast(`⏳ Persiapan! Jadwal ${item.mapel} dimulai dalam ${diffMins} menit.`);
+                        playBeep();
+                        item.notified = true;
+                        updated = true;
+                    }
+                }
+            });
+            if (updated) saveUserData();
+        }, 10000);
+
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 1.2);
+            } catch (e) {}
+        }
+
+        // --- 7. TIMER MODAL ---
+        let timerInterval, timeLeft = 0, isRunning = false, currentSesiObj = null;
+
+        function openTimer(itemObj) {
+            currentSesiObj = itemObj;
+            document.getElementById('timerModal').classList.add('active');
+            document.getElementById('timerJudul').innerText = itemObj.mapel;
+            document.getElementById('timerStatus').innerText = "Siap Fokus Bareng Owl?";
+            timeLeft = itemObj.durasi * 60; updateTimerDisplay();
+            isRunning = false; document.getElementById('btnStartPause').innerText = "▶️ Mulai";
+        }
+        function closeTimer() { clearInterval(timerInterval); document.getElementById('timerModal').classList.remove('active'); }
+
+        function toggleTimer() {
+            const btn = document.getElementById('btnStartPause');
+            if (isRunning) {
+                clearInterval(timerInterval); isRunning = false; btn.innerText = "▶️ Lanjut";
+            } else {
+                isRunning = true; btn.innerText = "⏸️ Jeda";
+                document.getElementById('timerStatus').innerText = "Sedang Fokus Belajar... 🦉";
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) { timeLeft--; updateTimerDisplay(); }
+                    else { clearInterval(timerInterval); waktuHabis(); }
+                }, 1000);
+            }
+        }
+        function mulaiIstirahat() {
+            clearInterval(timerInterval); timeLeft = 10 * 60; isRunning = false;
+            document.getElementById('timerStatus').innerText = "Waktu Istirahat (10 Menit) ☕";
+            document.getElementById('btnStartPause').innerText = "▶️ Mulai Istirahat";
+            updateTimerDisplay();
+        }
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+        function waktuHabis() {
+            playBeep();
+            showToast("⏰ Waktu belajar habis! Kerja bagus!");
+            document.getElementById('timerStatus').innerText = "Sesi Selesai! 🎉";
+            document.getElementById('btnStartPause').innerText = "🔄 Mulai Ulang";
+            isRunning = false;
+        }
+
+        // --- 8. EVALUASI & REFLEKSI ---
+        function selesaikanTugas() {
+            if (!currentSesiObj) return;
+            userData.stats.tugasSelesai++;
+            userData.stats.menitFokus += currentSesiObj.durasi;
+            userData.schedules = userData.schedules.filter(s => s.id !== currentSesiObj.id);
+            
+            saveUserData();
+            closeTimer();
+            renderJadwal();
+            updateStatDisplay();
+            showToast("Hebat! Tugas selesai dicatat di Evaluasi.");
+        }
+
+        function updateStatDisplay() {
+            const { tugasSelesai, menitFokus } = userData.stats;
+            document.getElementById('dashTotalMenit').innerText = `${menitFokus} Menit`;
+            document.getElementById('dashTotalTugas').innerText = `${tugasSelesai} Tugas`;
+            document.getElementById('statTugas').innerText = tugasSelesai;
+            document.getElementById('statFokus').innerText = menitFokus;
+            let skor = tugasSelesai > 0 ? Math.min(100, 50 + (tugasSelesai * 10)) : 0;
+            document.getElementById('statMaksimal').innerText = `${skor}%`;
+        }
+
+        function simpanRefleksi() {
+            const tk = document.getElementById('refleksiTingkat').value;
+            const ct = document.getElementById('refleksiCatatan').value.trim();
+            if (!ct) { alert("Isi catatan terlebih dahulu!"); return; }
+
+            userData.reflections.unshift({
+                tanggal: new Date().toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' }),
+                tingkat: tk,
+                catatan: ct
+            });
+            saveUserData();
+            renderRefleksi();
+            document.getElementById('refleksiCatatan').value = '';
+            showToast("Refleksi berhasil disimpan!");
+        }
+
+        function renderRefleksi() {
+            const container = document.getElementById('riwayatRefleksi');
+            container.innerHTML = '';
+            userData.reflections.forEach(r => {
+                container.insertAdjacentHTML('beforeend', `
+                    <div style="background: #faf9ff; padding: 15px 18px; border: 2px solid var(--border-color); border-left: 5px solid var(--primary); border-radius: 14px; margin-bottom: 12px;">
+                        <strong style="color: var(--primary); font-size: 13px;">📅 ${r.tanggal} • Fokus: ${r.tingkat}</strong>
+                        <p style="font-size: 14px; margin-top: 6px; font-weight: 600;">${r.catatan}</p>
+                    </div>
+                `);
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotif');
+            toast.querySelector('span').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4500);
+        }
+    </script>
+</body>
+</html>
