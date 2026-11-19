@@ -72,9 +72,10 @@
         .mascot-eyes { transform-origin: center 52px; animation: blinkEyes 4.2s infinite; }
         .mascot-wiggle { animation: wiggle 0.55s ease !important; }
 
-        /* === HALAMAN AUTENTIKASI (TERPISAH: DAFTAR & LOGIN) === */
+        /* === HALAMAN AUTENTIKASI (TERPISAH: PELAJAR & ADMIN) === */
         #auth-wrapper {
             display: flex;
+            flex-direction: column;
             height: 100vh;
             width: 100%;
             align-items: center;
@@ -87,7 +88,6 @@
             transition: opacity 0.4s ease;
             overflow-y: auto;
         }
-        /* Gelembung Dekoratif Auth */
         #auth-wrapper::before, #auth-wrapper::after {
             content: '';
             position: absolute;
@@ -97,6 +97,43 @@
         }
         #auth-wrapper::before { width: 260px; height: 260px; background: rgba(255, 209, 102, 0.35); top: -60px; left: -60px; }
         #auth-wrapper::after { width: 300px; height: 300px; background: rgba(76, 201, 240, 0.25); bottom: -80px; right: -70px; }
+
+        /* Pemilih Peran (Pelajar vs Admin) */
+        .role-switcher {
+            display: flex;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 6px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(124, 92, 255, 0.14);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            margin-bottom: 58px;
+            z-index: 3;
+            gap: 6px;
+        }
+        .role-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 15px;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .role-btn.active {
+            background: linear-gradient(135deg, #8b6dff, var(--primary));
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(124, 92, 255, 0.28);
+        }
+        .role-btn.admin-tab.active {
+            background: linear-gradient(135deg, #2b2640, #483d75);
+            box-shadow: 0 6px 16px rgba(43, 38, 64, 0.28);
+        }
 
         .auth-card {
             background: rgba(255, 255, 255, 0.94);
@@ -110,7 +147,6 @@
             display: none;
             position: relative;
             z-index: 2;
-            margin-top: 40px;
             animation: fadeIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .auth-card.active { display: block; }
@@ -175,6 +211,10 @@
             transition: 0.2s ease;
             margin-top: 8px;
         }
+        .btn-auth.admin-submit {
+            background: linear-gradient(135deg, #3c345c 0%, #2b2640 100%);
+            border-bottom-color: #161324;
+        }
         .btn-auth:hover, .btn-action:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(124, 92, 255, 0.28); }
         .btn-auth:active, .btn-action:active { transform: translateY(2px); border-bottom-width: 2px; }
         
@@ -182,8 +222,8 @@
         .auth-switch a { color: var(--primary); font-weight: 800; text-decoration: none; cursor: pointer; }
         .auth-switch a:hover { text-decoration: underline; }
 
-        /* === APLIKASI UTAMA (DASHBOARD) === */
-        #main-app { display: none; height: 100vh; width: 100%; opacity: 0; transition: opacity 0.4s ease; }
+        /* === APLIKASI UTAMA (PELAJAR & ADMIN) === */
+        #main-app, #admin-app { display: none; height: 100vh; width: 100%; opacity: 0; transition: opacity 0.4s ease; }
 
         /* SIDEBAR (DESKTOP) */
         .sidebar {
@@ -225,7 +265,6 @@
             box-shadow: 0 8px 18px rgba(124, 92, 255, 0.28);
         }
 
-        /* Kartu Mini Maskot di Sidebar */
         .sidebar-mascot-tip {
             margin: 15px 16px;
             padding: 14px;
@@ -244,8 +283,8 @@
 
         /* KONTEN UTAMA */
         .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 30px 40px; position: relative; }
-        .page-section { display: none; opacity: 0; transform: translateY(15px); transition: var(--transition); max-width: 1100px; margin: 0 auto; width: 100%; padding-bottom: 45px; }
-        .page-section.active { display: block; opacity: 1; transform: translateY(0); }
+        .page-section, .admin-section { display: none; opacity: 0; transform: translateY(15px); transition: var(--transition); max-width: 1100px; margin: 0 auto; width: 100%; padding-bottom: 45px; }
+        .page-section.active, .admin-section.active { display: block; opacity: 1; transform: translateY(0); }
         .section-title { font-size: 19px; font-weight: 700; margin-bottom: 18px; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
 
         /* === DASBOR & BANNER MASKOT === */
@@ -265,7 +304,10 @@
             position: relative;
             overflow: hidden;
         }
-        /* Dekorasi Bintang & Lingkaran di Banner */
+        .banner.admin-banner {
+            background: linear-gradient(135deg, #3c345c 0%, #2b2640 60%, #4c3b8c 100%);
+            box-shadow: 0 18px 40px rgba(43, 38, 64, 0.25);
+        }
         .banner::before {
             content: '✨';
             position: absolute;
@@ -335,7 +377,6 @@
         .card-dash:hover .icon-box { transform: scale(1.1) rotate(-6deg); }
         .card-dash h4 { font-size: 16px; color: var(--text-dark); margin-bottom: 3px; }
 
-        /* Kartu Pencapaian */
         .stat-summary-card {
             background: var(--card-bg);
             border-radius: 24px;
@@ -435,6 +476,46 @@
         .reflect-form select { width: 100%; padding: 13px 15px; border: 2px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; outline: none; background: #faf9ff; font-weight: 600; }
         .reflect-form textarea:focus, .reflect-form select:focus { border-color: var(--primary); background: white; }
 
+        /* === ADMIN SPECIFIC UI === */
+        .quota-bar-bg { width: 100%; height: 14px; background: var(--border-color); border-radius: 20px; overflow: hidden; margin: 12px 0 8px; }
+        .quota-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-mint), var(--primary)); width: 0%; transition: width 0.4s ease; border-radius: 20px; }
+        
+        .admin-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+        .admin-form-grid input { padding: 12px 14px; border: 2px solid var(--border-color); border-radius: 14px; outline: none; background: #faf9ff; font-weight: 600; font-size: 13.5px; }
+        .admin-form-grid input:focus { border-color: var(--primary); background: #fff; }
+
+        .filter-pills { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+        .filter-pill { padding: 8px 16px; border-radius: 14px; border: 2px solid var(--border-color); background: white; color: var(--text-muted); font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .filter-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .user-row {
+            background: #faf9ff;
+            border: 2px solid var(--border-color);
+            border-radius: 18px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .user-row.kicked { background: #fff5f6; border-color: #fecdd3; }
+        .user-meta h4 { font-size: 16px; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .user-meta p { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .status-tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 800; }
+        .status-tag.active { background: #dcfce7; color: #15803d; }
+        .status-tag.kicked { background: #ffe4e6; color: #be123c; }
+
+        .admin-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-mini { padding: 8px 14px; border-radius: 12px; border: none; font-size: 12.5px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-mini.kick { background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3; }
+        .btn-mini.kick:hover { background: #e11d48; color: white; }
+        .btn-mini.allow { background: #ecfdf5; color: #059669; border: 1.5px solid #a7f3d0; }
+        .btn-mini.allow:hover { background: #059669; color: white; }
+        .btn-mini.del { background: #f3f4f6; color: #4b5563; border: 1.5px solid #d1d5db; }
+        .btn-mini.del:hover { background: #374151; color: white; }
+
         /* === RUANG BK === */
         .bk-card { background: white; padding: 45px 30px; border-radius: 30px; text-align: center; box-shadow: var(--shadow-soft); border: 2px solid var(--border-color); }
         .btn-wa {
@@ -519,7 +600,7 @@
         /* === RESPONSIF MOBILE (HP) === */
         @media (max-width: 768px) {
             body { overflow: auto; }
-            #main-app { flex-direction: column; height: 100vh; }
+            #main-app, #admin-app { flex-direction: column; height: 100vh; }
             .mobile-topbar { display: flex; }
             .sidebar {
                 position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
@@ -532,7 +613,7 @@
             .nav-link { flex-direction: column; gap: 3px; padding: 8px 10px; font-size: 11px; border-radius: 14px; }
             .nav-link:hover { transform: none; }
             .main-wrapper { padding: 18px 16px 92px 16px; }
-            .dashboard-grid, .cards-grid, .stat-grid { grid-template-columns: 1fr; }
+            .dashboard-grid, .cards-grid, .stat-grid, .admin-form-grid { grid-template-columns: 1fr; }
             .banner { flex-direction: column; text-align: center; padding: 26px 20px; }
             .banner-mascot-area { flex-direction: column-reverse; }
             .speech-bubble { border-bottom-right-radius: 18px; max-width: 240px; }
@@ -544,13 +625,18 @@
 </head>
 <body>
 
-    <!-- === HALAMAN AUTENTIKASI (TERPISAH) === -->
+    <!-- === HALAMAN AUTENTIKASI (TERPISAH: PELAJAR & ADMIN) === -->
     <div id="auth-wrapper">
         
-        <!-- 1. HALAMAN DAFTAR (SIGN UP) -->
+        <!-- Pemilih Peran Login -->
+        <div class="role-switcher">
+            <button type="button" class="role-btn active" id="tabRolePelajar" onclick="switchRole('pelajar')">🎓 Pelajar</button>
+            <button type="button" class="role-btn admin-tab" id="tabRoleAdmin" onclick="switchRole('admin')">🛡️ Admin</button>
+        </div>
+
+        <!-- 1. HALAMAN DAFTAR PELAJAR (SIGN UP) -->
         <div class="auth-card" id="cardRegister">
             <div class="auth-mascot-wrap">
-                <!-- Maskot Owl Mini -->
                 <svg width="78" height="78" viewBox="0 0 120 120" class="mascot-float" aria-label="Maskot Owl">
                     <ellipse cx="60" cy="70" rx="38" ry="36" fill="#7c5cff"/>
                     <ellipse cx="60" cy="78" rx="26" ry="24" fill="#f5f3ff"/>
@@ -574,7 +660,7 @@
                 </svg>
             </div>
             <div class="auth-brand">Study<span>Plan</span></div>
-            <p class="auth-subtitle">Halo! Aku Owl 🦉 Yuk buat akun baru dulu biar jadwal belajarmu rapi.</p>
+            <p class="auth-subtitle">Halo! Aku Owl 🦉 Yuk buat akun pelajar baru dulu biar jadwal belajarmu rapi.</p>
             <div id="regAlert" class="auth-alert"></div>
             
             <form id="formRegister" onsubmit="doRegister(event)">
@@ -590,7 +676,7 @@
                     <label>Kata Sandi</label>
                     <input type="password" id="regPass" placeholder="Minimal 4 karakter" minlength="4" required>
                 </div>
-                <button type="submit" class="btn-auth">✨ Daftar Akun</button>
+                <button type="submit" class="btn-auth">✨ Daftar Akun Pelajar</button>
             </form>
 
             <div class="auth-switch">
@@ -598,7 +684,7 @@
             </div>
         </div>
 
-        <!-- 2. HALAMAN LOGIN (MASUK) -->
+        <!-- 2. HALAMAN LOGIN PELAJAR -->
         <div class="auth-card" id="cardLogin">
             <div class="auth-mascot-wrap">
                 <svg width="78" height="78" viewBox="0 0 120 120" class="mascot-float" aria-label="Maskot Owl">
@@ -624,7 +710,7 @@
                 </svg>
             </div>
             <div class="auth-brand">Study<span>Plan</span></div>
-            <p class="auth-subtitle">Selamat datang kembali! Owl sudah siap menemanimu fokus hari ini.</p>
+            <p class="auth-subtitle">Selamat datang kembali, Pelajar! Owl sudah siap menemanimu fokus hari ini.</p>
             <div id="loginAlert" class="auth-alert"></div>
 
             <form id="formLogin" onsubmit="doLogin(event)">
@@ -644,18 +730,38 @@
             </div>
         </div>
 
+        <!-- 3. HALAMAN LOGIN ADMIN -->
+        <div class="auth-card" id="cardAdminLogin">
+            <div class="auth-mascot-wrap" style="border-color: #dcd3ff; background: #2b2640;">
+                <span style="font-size: 46px;" class="mascot-float">🛡️</span>
+            </div>
+            <div class="auth-brand">Admin <span>Panel</span></div>
+            <p class="auth-subtitle">Akses khusus pengelola StudyPlan untuk monitoring & kontrol akses siswa.</p>
+            <div id="adminAlert" class="auth-alert"></div>
+
+            <form id="formAdminLogin" onsubmit="doAdminLogin(event)">
+                <div class="auth-input-group">
+                    <label>Nama Admin</label>
+                    <input type="text" id="adminUser" placeholder="Masukkan nama admin" required>
+                </div>
+                <div class="auth-input-group">
+                    <label>Kata Sandi Admin</label>
+                    <input type="password" id="adminPass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-auth admin-submit">🔐 Masuk sebagai Admin</button>
+            </form>
+        </div>
+
     </div>
 
-    <!-- === APLIKASI UTAMA === -->
+    <!-- === APLIKASI UTAMA PELAJAR === -->
     <div id="main-app">
         
-        <!-- TOPBAR KHUSUS MOBILE -->
         <div class="mobile-topbar">
             <div style="font-family:'Fredoka',sans-serif; font-size: 21px; font-weight: 700;">🦉 Study<span style="color:var(--primary)">Plan</span></div>
             <button onclick="doLogout()" style="background:#fff1f2; color:#ff5d73; border:2px solid #fecdd3; padding:6px 12px; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">🚪 Keluar</button>
         </div>
 
-        <!-- SIDEBAR -->
         <nav class="sidebar">
             <div class="brand">
                 <div class="brand-badge">🦉</div>
@@ -676,7 +782,6 @@
             </div>
         </nav>
 
-        <!-- KONTEN UTAMA -->
         <div class="main-wrapper">
             
             <!-- 1. DASBOR -->
@@ -687,7 +792,6 @@
                         <h1 id="userGreeting" style="font-size: 32px; margin-bottom: 8px; font-weight: 700;">Hai, Siswa!</h1>
                         <p style="font-size: 14.5px; opacity: 0.94; max-width: 440px; line-height: 1.5;">Siap menaklukkan tugas hari ini? Jadwalkan waktumu dan mulai fokus tanpa distraksi bareng Owl!</p>
                     </div>
-                    <!-- Maskot Interaktif di Banner -->
                     <div class="banner-mascot-area" onclick="sapaMaskot()" title="Klik Owl untuk semangat!">
                         <div class="speech-bubble" id="mascotQuote">Hai! Klik aku kalau butuh penyemangat ya ✨</div>
                         <svg id="heroMascot" width="118" height="118" viewBox="0 0 120 120" class="mascot-float" aria-label="Maskot Owl">
@@ -704,7 +808,6 @@
                                 <circle cx="74" cy="56" r="5.5" fill="#2b2640"/>
                                 <circle cx="48" cy="53.5" r="2.2" fill="#ffffff"/>
                                 <circle cx="76" cy="53.5" r="2.2" fill="#ffffff"/>
-                                <!-- Kacamata Lucu -->
                                 <circle cx="45" cy="56" r="13" fill="none" stroke="#2b2640" stroke-width="2.5"/>
                                 <circle cx="75" cy="56" r="13" fill="none" stroke="#2b2640" stroke-width="2.5"/>
                                 <line x1="58" y1="56" x2="62" y2="56" stroke="#2b2640" stroke-width="2.5"/>
@@ -722,19 +825,19 @@
                     <div>
                         <div class="section-title">🚀 Akses Cepat</div>
                         <div class="cards-grid">
-                            <div class="card-dash" onclick="switchPage('jadwal', document.querySelectorAll('.nav-link')[1])">
+                            <div class="card-dash" onclick="switchPage('jadwal', document.querySelectorAll('#main-app .nav-link')[1])">
                                 <div class="icon-box" style="background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0284c7;">⏱️</div>
                                 <div><h4>Sesi Fokus</h4><p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Atur Jadwal & Timer</p></div>
                             </div>
-                            <div class="card-dash" onclick="switchPage('evaluasi', document.querySelectorAll('.nav-link')[2])">
+                            <div class="card-dash" onclick="switchPage('evaluasi', document.querySelectorAll('#main-app .nav-link')[2])">
                                 <div class="icon-box" style="background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #9333ea;">📝</div>
                                 <div><h4>Refleksi</h4><p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Catat Progres Harian</p></div>
                             </div>
-                            <div class="card-dash" onclick="switchPage('tips', document.querySelectorAll('.nav-link')[3])">
+                            <div class="card-dash" onclick="switchPage('tips', document.querySelectorAll('#main-app .nav-link')[3])">
                                 <div class="icon-box" style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706;">💡</div>
                                 <div><h4>Tips Fokus</h4><p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Jurus Anti Menunda</p></div>
                             </div>
-                            <div class="card-dash" onclick="switchPage('ruangbk', document.querySelectorAll('.nav-link')[4])">
+                            <div class="card-dash" onclick="switchPage('ruangbk', document.querySelectorAll('#main-app .nav-link')[4])">
                                 <div class="icon-box" style="background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a;">💬</div>
                                 <div><h4>Ruang BK</h4><p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Konsultasi WhatsApp</p></div>
                             </div>
@@ -760,7 +863,6 @@
             <!-- 2. JADWAL & PRIORITAS -->
             <section id="jadwal" class="page-section">
                 <div class="wizard-container">
-                    <!-- Step 1: Klasifikasi -->
                     <div class="wizard-step active" id="step-1">
                         <h2 style="text-align: center; margin-bottom: 6px; font-size: 24px;">🎯 Pilih Klasifikasi Pelajaran</h2>
                         <p style="text-align: center; color: var(--text-muted); font-size: 14px;">Klik salah satu kelompok untuk mulai menyusun jadwal belajarmu.</p>
@@ -771,7 +873,6 @@
                         </div>
                     </div>
 
-                    <!-- Step 2: Mata Pelajaran -->
                     <div class="wizard-step" id="step-2">
                         <button style="background:var(--primary-light); border:none; color:var(--primary); padding:7px 14px; border-radius:10px; cursor:pointer; font-weight:800; margin-bottom: 14px;" onclick="goToStep(1)">← Kembali</button>
                         <h2 style="text-align: center; margin-bottom: 5px; font-size: 24px;">📖 Pilih Mata Pelajaran</h2>
@@ -783,14 +884,12 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Kelas -->
                     <div class="wizard-step" id="step-3">
                         <button style="background:var(--primary-light); border:none; color:var(--primary); padding:7px 14px; border-radius:10px; cursor:pointer; font-weight:800; margin-bottom: 14px;" onclick="goToStep(2)">← Kembali</button>
                         <h2 style="text-align: center; margin-bottom: 5px; font-size: 24px;">🏫 Pilih Kelasmu</h2>
                         <div class="class-grid" id="classGridContainer"></div>
                     </div>
 
-                    <!-- Step 4: Waktu & Durasi -->
                     <div class="wizard-step" id="step-4">
                         <button style="background:var(--primary-light); border:none; color:var(--primary); padding:7px 14px; border-radius:10px; cursor:pointer; font-weight:800; margin-bottom: 14px;" onclick="goToStep(3)">← Kembali</button>
                         <h2 style="text-align: center; margin-bottom: 5px; font-size: 24px;">⏰ Atur Waktu & Target</h2>
@@ -910,12 +1009,117 @@
         </div>
     </div>
 
+    <!-- === APLIKASI DASHBOARD ADMIN (JIHAN) === -->
+    <div id="admin-app">
+        <div class="mobile-topbar">
+            <div style="font-family:'Fredoka',sans-serif; font-size: 20px; font-weight: 700;">🛡️ Admin <span style="color:var(--primary)">StudyPlan</span></div>
+            <button onclick="doAdminLogout()" style="background:#fff1f2; color:#ff5d73; border:2px solid #fecdd3; padding:6px 12px; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">🚪 Keluar</button>
+        </div>
+
+        <nav class="sidebar">
+            <div class="brand">
+                <div class="brand-badge" style="background:#2b2640; color:white;">🛡️</div>
+                <div>Admin<span>Panel</span></div>
+            </div>
+            <div class="nav-menu">
+                <a class="nav-link active" onclick="switchAdminPage('admin-monitor', this)"><span>📊</span> Monitoring</a>
+                <a class="nav-link" onclick="switchAdminPage('admin-users', this)"><span>👥</span> Kelola Akses</a>
+            </div>
+            <div class="sidebar-mascot-tip" style="background: #f1eeff; border-color: #c7b8ff; color: var(--primary-dark);">
+                🛡️ Login sebagai: <strong>Jihan</strong><br>Batas Kuota: Maks. 100 Siswa
+            </div>
+            <div class="logout-desktop" style="padding: 0 16px;">
+                <a class="nav-link" style="color: var(--danger);" onclick="doAdminLogout()"><span>🚪</span> Keluar Admin</a>
+            </div>
+        </nav>
+
+        <div class="main-wrapper">
+            <!-- ADMIN PAGE 1: MONITORING & DAFTAR YANG BISA MASUK -->
+            <section id="admin-monitor" class="admin-section active">
+                <div class="banner admin-banner">
+                    <div style="z-index: 2;">
+                        <div class="banner-pill">🛡️ KONTROL PENGGUNA & KUOTA</div>
+                        <h1 style="font-size: 30px; margin-bottom: 8px; font-weight: 700;">Halo, Admin Jihan!</h1>
+                        <p style="font-size: 14px; opacity: 0.9; max-width: 500px;">Pantau aktivitas belajar siswa, lihat siapa saja yang memiliki izin masuk, dan kelola kuota maksimal 100 pengguna.</p>
+                    </div>
+                    <div style="font-size: 64px; z-index:2;" class="mascot-float">📋</div>
+                </div>
+
+                <!-- Ringkasan Kuota & Statistik -->
+                <div class="eval-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="font-size: 18px;">👥 Kuota Akses Pengguna Website</h3>
+                        <strong style="color: var(--primary); font-size: 18px;" id="adminQuotaText">0 / 100 Pengguna Aktif</strong>
+                    </div>
+                    <div class="quota-bar-bg">
+                        <div class="quota-bar-fill" id="adminQuotaBar"></div>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--text-muted); font-weight: 600;" id="adminQuotaSub">Sisa kuota tersedia: 100 orang.</p>
+
+                    <div class="stat-grid" style="margin-top: 20px;">
+                        <div class="stat-box"><h3 id="admTotalAllowed">0</h3><p style="font-size: 13px; color: var(--text-muted); font-weight: 700;">Bisa Masuk</p></div>
+                        <div class="stat-box"><h3 id="admTotalKicked" style="color: var(--danger);">0</h3><p style="font-size: 13px; color: var(--text-muted); font-weight: 700;">Dikeluarkan</p></div>
+                        <div class="stat-box"><h3 id="admTotalMenit" style="color: var(--success);">0</h3><p style="font-size: 13px; color: var(--text-muted); font-weight: 700;">Total Menit Fokus</p></div>
+                    </div>
+                </div>
+
+                <!-- Daftar Pengguna yang Bisa Masuk -->
+                <div class="eval-card">
+                    <div class="section-title" style="margin-bottom: 14px;">
+                        <span>✅ Daftar Pengguna yang Bisa Masuk ke Website</span>
+                    </div>
+                    <div id="adminAllowedList"></div>
+                </div>
+            </section>
+
+            <!-- ADMIN PAGE 2: KELOLA (MASUKKAN & KELUARKAN PENGGUNA) -->
+            <section id="admin-users" class="admin-section">
+                <!-- Form Masukkan Pengguna Baru -->
+                <div class="eval-card">
+                    <h2 style="margin-bottom: 6px; font-size: 22px;">➕ Masukkan Pengguna Baru</h2>
+                    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px; font-weight: 600;">Admin dapat langsung mendaftarkan siswa agar bisa masuk ke StudyPlan (maksimal 100 akun aktif).</p>
+                    <form onsubmit="adminAddUser(event)">
+                        <div class="admin-form-grid">
+                            <input type="text" id="admAddNama" placeholder="Nama Lengkap Siswa" required>
+                            <input type="email" id="admAddEmail" placeholder="Email Siswa" required>
+                            <input type="password" id="admAddPass" placeholder="Password (min. 4 huruf)" minlength="4" required>
+                        </div>
+                        <button type="submit" class="btn-action" style="width: auto; padding: 12px 26px;">✅ Masukkan Pengguna</button>
+                    </form>
+                </div>
+
+                <!-- Daftar Semua Pengguna + Kontrol Keluarkan / Izinkan -->
+                <div class="eval-card">
+                    <h2 style="margin-bottom: 14px; font-size: 22px;">👥 Kontrol Akses Semua Pengguna</h2>
+                    <div class="filter-pills">
+                        <button class="filter-pill active" onclick="setAdminFilter('all', this)">Semua</button>
+                        <button class="filter-pill" onclick="setAdminFilter('allowed', this)">✅ Bisa Masuk</button>
+                        <button class="filter-pill" onclick="setAdminFilter('kicked', this)">🚫 Dikeluarkan</button>
+                    </div>
+                    <div id="adminAllUsersList"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
     <!-- TOAST NOTIFIKASI -->
     <div class="toast" id="toastNotif">🔔 <span>Notifikasi</span></div>
 
-    <!-- === JAVASCRIPT LOGIC (STRUKTUR TETAP SAMA) === -->
+    <!-- === JAVASCRIPT LOGIC === -->
     <script>
-        // --- INTERAKSI LUCU MASKOT (TAMBAHAN VISUAL SAJA) ---
+        // --- KONSTANTA ADMIN & KUOTA ---
+        const MAX_USERS = 100;
+        const ADMIN_NAME = 'Jihan';
+        const ADMIN_PASS = '123456';
+        const USERS_KEY = 'studyplan_users';
+        const SESSION_KEY = 'studyplan_session';
+        const ADMIN_SESSION_KEY = 'studyplan_admin_session';
+
+        let currentUser = null;
+        let adminFilter = 'all';
+        let userData = { schedules: [], stats: { tugasSelesai: 0, menitFokus: 0 }, reflections: [] };
+
+        // --- INTERAKSI MASKOT ---
         const ucapanOwl = [
             "Pelan-pelan aja, yang penting mulai dulu! 🦉✨",
             "Jauhkan HP 15 menit, kamu pasti bisa! 📵💪",
@@ -932,41 +1136,56 @@
             bubble.innerText = ucapanOwl[Math.floor(Math.random() * ucapanOwl.length)];
         }
 
-        // --- 1. STORAGE & AUTH SYSTEM (STRICT: DAFTAR DULU BARU LOGIN) ---
-        const USERS_KEY = 'studyplan_users';
-        const SESSION_KEY = 'studyplan_session';
-        let currentUser = null;
-        let userData = { schedules: [], stats: { tugasSelesai: 0, menitFokus: 0 }, reflections: [] };
-
+        // --- STORAGE HELPERS ---
         function getUsers() {
-            return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+            const raw = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+            // Pastikan user lama tetap punya properti allowed = true
+            return raw.map(u => ({ ...u, allowed: u.allowed !== false }));
         }
 
         function saveUsers(users) {
             localStorage.setItem(USERS_KEY, JSON.stringify(users));
         }
 
-        function showAuthCard(mode, alertMsg = '', alertType = '') {
-            document.getElementById('cardRegister').classList.remove('active');
-            document.getElementById('cardLogin').classList.remove('active');
-            document.getElementById('regAlert').className = 'auth-alert';
-            document.getElementById('loginAlert').className = 'auth-alert';
+        function getActiveUsersCount() {
+            return getUsers().filter(u => u.allowed !== false).length;
+        }
 
-            if (mode === 'register') {
-                document.getElementById('cardRegister').classList.add('active');
-                if (alertMsg) {
-                    const el = document.getElementById('regAlert');
-                    el.innerText = alertMsg; el.className = `auth-alert ${alertType}`;
-                }
+        // --- SWITCH PERAN (PELAJAR / ADMIN) ---
+        function switchRole(role) {
+            document.getElementById('tabRolePelajar').classList.remove('active');
+            document.getElementById('tabRoleAdmin').classList.remove('active');
+            if (role === 'admin') {
+                document.getElementById('tabRoleAdmin').classList.add('active');
+                showAuthCard('admin');
             } else {
-                document.getElementById('cardLogin').classList.add('active');
-                if (alertMsg) {
-                    const el = document.getElementById('loginAlert');
-                    el.innerText = alertMsg; el.className = `auth-alert ${alertType}`;
-                }
+                document.getElementById('tabRolePelajar').classList.add('active');
+                const users = getUsers();
+                showAuthCard(users.length === 0 ? 'register' : 'login');
             }
         }
 
+        function showAuthCard(mode, alertMsg = '', alertType = '') {
+            ['cardRegister', 'cardLogin', 'cardAdminLogin'].forEach(id => {
+                document.getElementById(id).classList.remove('active');
+            });
+            ['regAlert', 'loginAlert', 'adminAlert'].forEach(id => {
+                document.getElementById(id).className = 'auth-alert';
+            });
+
+            if (mode === 'register') {
+                document.getElementById('cardRegister').classList.add('active');
+                if (alertMsg) { const el = document.getElementById('regAlert'); el.innerText = alertMsg; el.className = `auth-alert ${alertType}`; }
+            } else if (mode === 'admin') {
+                document.getElementById('cardAdminLogin').classList.add('active');
+                if (alertMsg) { const el = document.getElementById('adminAlert'); el.innerText = alertMsg; el.className = `auth-alert ${alertType}`; }
+            } else {
+                document.getElementById('cardLogin').classList.add('active');
+                if (alertMsg) { const el = document.getElementById('loginAlert'); el.innerText = alertMsg; el.className = `auth-alert ${alertType}`; }
+            }
+        }
+
+        // --- AUTENTIKASI PELAJAR ---
         function doRegister(e) {
             e.preventDefault();
             const nama = document.getElementById('regNama').value.trim();
@@ -979,7 +1198,13 @@
                 return;
             }
 
-            users.push({ nama, email, pass });
+            // CEK KUOTA MAKSIMAL 100 ORANG
+            if (getActiveUsersCount() >= MAX_USERS) {
+                showAuthCard('register', `Kuota website penuh! Maksimal hanya ${MAX_USERS} pengguna yang dapat mengakses website ini. Hubungi Admin Jihan.`, 'error');
+                return;
+            }
+
+            users.push({ nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID') });
             saveUsers(users);
             document.getElementById('formRegister').reset();
 
@@ -1000,6 +1225,12 @@
                 return;
             }
 
+            // CEK APAKAH DIKELUARKAN OLEH ADMIN
+            if (foundUser.allowed === false) {
+                showAuthCard('login', 'Akses ditolak! Akunmu telah dikeluarkan oleh Admin Jihan. Hubungi Admin untuk izin masuk kembali.', 'error');
+                return;
+            }
+
             if (foundUser.pass !== pass) {
                 showAuthCard('login', 'Kata sandi salah! Silakan coba lagi.', 'error');
                 return;
@@ -1010,6 +1241,190 @@
             startApp(foundUser);
         }
 
+        // --- AUTENTIKASI ADMIN ---
+        function doAdminLogin(e) {
+            e.preventDefault();
+            const uname = document.getElementById('adminUser').value.trim();
+            const pass = document.getElementById('adminPass').value;
+
+            if (uname.toLowerCase() === ADMIN_NAME.toLowerCase() && pass === ADMIN_PASS) {
+                localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+                document.getElementById('formAdminLogin').reset();
+                startAdminApp();
+            } else {
+                showAuthCard('admin', 'Nama Admin atau Kata Sandi salah!', 'error');
+            }
+        }
+
+        function startAdminApp() {
+            const authWrap = document.getElementById('auth-wrapper');
+            const adminApp = document.getElementById('admin-app');
+            authWrap.style.opacity = '0';
+            setTimeout(() => {
+                authWrap.style.display = 'none';
+                adminApp.style.display = 'flex';
+                void adminApp.offsetWidth;
+                adminApp.style.opacity = '1';
+                switchAdminPage('admin-monitor', document.querySelectorAll('#admin-app .nav-link')[0]);
+                renderAdminDashboard();
+            }, 300);
+        }
+
+        function doAdminLogout() {
+            localStorage.removeItem(ADMIN_SESSION_KEY);
+            const authWrap = document.getElementById('auth-wrapper');
+            const adminApp = document.getElementById('admin-app');
+            adminApp.style.opacity = '0';
+            setTimeout(() => {
+                adminApp.style.display = 'none';
+                authWrap.style.display = 'flex';
+                void authWrap.offsetWidth;
+                authWrap.style.opacity = '1';
+                switchRole('admin');
+                showAuthCard('admin', 'Berhasil keluar dari Panel Admin.', 'success');
+            }, 300);
+        }
+
+        function switchAdminPage(pageId, element) {
+            document.querySelectorAll('#admin-app .nav-link').forEach(link => link.classList.remove('active'));
+            if (element) element.classList.add('active');
+            document.querySelectorAll('.admin-section').forEach(sec => {
+                sec.classList.remove('active');
+                sec.style.opacity = '0'; sec.style.transform = 'translateY(15px)';
+            });
+            const target = document.getElementById(pageId);
+            target.classList.add('active');
+            setTimeout(() => { target.style.opacity = '1'; target.style.transform = 'translateY(0)'; }, 10);
+            renderAdminDashboard();
+        }
+
+        function setAdminFilter(filterType, btnEl) {
+            adminFilter = filterType;
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+            renderAdminDashboard();
+        }
+
+        // --- FITUR KONTROL ADMIN ---
+        function adminAddUser(e) {
+            e.preventDefault();
+            const nama = document.getElementById('admAddNama').value.trim();
+            const email = document.getElementById('admAddEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('admAddPass').value;
+
+            const users = getUsers();
+            if (users.some(u => u.email === email)) {
+                showToast('⚠️ Email tersebut sudah terdaftar!');
+                return;
+            }
+            if (getActiveUsersCount() >= MAX_USERS) {
+                showToast(`🚫 Kuota penuh! Maksimal ${MAX_USERS} pengguna aktif.`);
+                return;
+            }
+
+            users.push({ nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID') });
+            saveUsers(users);
+            e.target.reset();
+            renderAdminDashboard();
+            showToast(`✅ ${nama} berhasil dimasukkan ke website!`);
+        }
+
+        function toggleUserAccess(email, allowStatus) {
+            const users = getUsers();
+            if (allowStatus && getActiveUsersCount() >= MAX_USERS) {
+                showToast(`🚫 Gagal! Kuota sudah mencapai batas ${MAX_USERS} pengguna.`);
+                return;
+            }
+            const idx = users.findIndex(u => u.email === email);
+            if (idx !== -1) {
+                users[idx].allowed = allowStatus;
+                saveUsers(users);
+                renderAdminDashboard();
+                showToast(allowStatus ? `✅ Akses ${users[idx].nama} diizinkan kembali.` : `🚫 ${users[idx].nama} telah dikeluarkan dari website.`);
+            }
+        }
+
+        function deleteUserAccount(email) {
+            if (!confirm('Hapus permanen akun dan seluruh data belajar siswa ini?')) return;
+            const users = getUsers().filter(u => u.email !== email);
+            saveUsers(users);
+            localStorage.removeItem(`studyplan_data_${email}`);
+            renderAdminDashboard();
+            showToast('🗑️ Akun pengguna berhasil dihapus permanen.');
+        }
+
+        function renderAdminDashboard() {
+            const users = getUsers();
+            const allowedUsers = users.filter(u => u.allowed !== false);
+            const kickedUsers = users.filter(u => u.allowed === false);
+
+            // Hitung total menit fokus seluruh siswa
+            let grandTotalMenit = 0;
+            const enrichedUsers = users.map(u => {
+                const raw = localStorage.getItem(`studyplan_data_${u.email}`);
+                const d = raw ? JSON.parse(raw) : { schedules: [], stats: { tugasSelesai: 0, menitFokus: 0 }, reflections: [] };
+                grandTotalMenit += (d.stats?.menitFokus || 0);
+                return { ...u, data: d };
+            });
+
+            // Update Kuota & Stat
+            const pct = Math.min(100, Math.round((allowedUsers.length / MAX_USERS) * 100));
+            document.getElementById('adminQuotaText').innerText = `${allowedUsers.length} / ${MAX_USERS} Pengguna Aktif`;
+            document.getElementById('adminQuotaBar').style.width = `${pct}%`;
+            document.getElementById('adminQuotaSub').innerText = `Sisa kuota tersedia: ${Math.max(0, MAX_USERS - allowedUsers.length)} orang.`;
+            document.getElementById('admTotalAllowed').innerText = allowedUsers.length;
+            document.getElementById('admTotalKicked').innerText = kickedUsers.length;
+            document.getElementById('admTotalMenit').innerText = grandTotalMenit;
+
+            // Render Daftar Pengguna yang Bisa Masuk (Tab Monitoring)
+            const allowedContainer = document.getElementById('adminAllowedList');
+            const activeList = enrichedUsers.filter(u => u.allowed !== false);
+            if (activeList.length === 0) {
+                allowedContainer.innerHTML = `<div style="text-align:center; padding:26px; color:var(--text-muted); border:2px dashed var(--border-color); border-radius:16px; font-weight:700;">Belum ada pengguna yang terdaftar.</div>`;
+            } else {
+                allowedContainer.innerHTML = activeList.map((u, i) => `
+                    <div class="user-row">
+                        <div class="user-meta">
+                            <h4>${i + 1}. ${u.nama} <span class="status-tag active">✅ Bisa Masuk</span></h4>
+                            <p>📧 ${u.email} • ⏳ ${u.data.stats.menitFokus} mnt fokus • ✅ ${u.data.stats.tugasSelesai} tugas • 📅 ${u.data.schedules.length} jadwal aktif</p>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="btn-mini kick" onclick="toggleUserAccess('${u.email}', false)">🚫 Keluarkan</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Render Semua Pengguna sesuai Filter (Tab Kelola Akses)
+            const allContainer = document.getElementById('adminAllUsersList');
+            const filtered = enrichedUsers.filter(u => {
+                if (adminFilter === 'allowed') return u.allowed !== false;
+                if (adminFilter === 'kicked') return u.allowed === false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                allContainer.innerHTML = `<div style="text-align:center; padding:26px; color:var(--text-muted); border:2px dashed var(--border-color); border-radius:16px; font-weight:700;">Tidak ada pengguna pada kategori ini.</div>`;
+            } else {
+                allContainer.innerHTML = filtered.map(u => `
+                    <div class="user-row ${u.allowed ? '' : 'kicked'}">
+                        <div class="user-meta">
+                            <h4>${u.nama} <span class="status-tag ${u.allowed ? 'active' : 'kicked'}">${u.allowed ? '✅ Bisa Masuk' : '🚫 Dikeluarkan'}</span></h4>
+                            <p>📧 ${u.email} • ⏳ ${u.data.stats.menitFokus} mnt • ✅ ${u.data.stats.tugasSelesai} tugas • 📝 ${u.data.reflections.length} refleksi</p>
+                        </div>
+                        <div class="admin-actions">
+                            ${u.allowed
+                                ? `<button class="btn-mini kick" onclick="toggleUserAccess('${u.email}', false)">🚫 Keluarkan</button>`
+                                : `<button class="btn-mini allow" onclick="toggleUserAccess('${u.email}', true)">✅ Izinkan Masuk</button>`
+                            }
+                            <button class="btn-mini del" onclick="deleteUserAccount('${u.email}')">🗑️ Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // --- APLIKASI PELAJAR ---
         function startApp(user) {
             currentUser = user;
             loadUserData();
@@ -1024,7 +1439,7 @@
                 void mainApp.offsetWidth;
                 mainApp.style.opacity = '1';
 
-                switchPage('dasbor', document.querySelectorAll('.nav-link')[0]);
+                switchPage('dasbor', document.querySelectorAll('#main-app .nav-link')[0]);
                 renderJadwal();
                 renderRefleksi();
                 updateStatDisplay();
@@ -1044,11 +1459,11 @@
                 authWrap.style.display = 'flex';
                 void authWrap.offsetWidth;
                 authWrap.style.opacity = '1';
+                switchRole('pelajar');
                 showAuthCard('login', 'Kamu berhasil keluar dari akun.', 'success');
             }, 300);
         }
 
-        // --- 2. PER-USER DATA PERSISTENCE ---
         function getDataKey() { return `studyplan_data_${currentUser.email}`; }
 
         function loadUserData() {
@@ -1066,18 +1481,27 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem(ADMIN_SESSION_KEY) === 'true') {
+                startAdminApp();
+                return;
+            }
             const savedSession = localStorage.getItem(SESSION_KEY);
             if (savedSession) {
-                startApp(JSON.parse(savedSession));
-            } else {
-                const users = getUsers();
-                showAuthCard(users.length === 0 ? 'register' : 'login');
+                const parsed = JSON.parse(savedSession);
+                const latest = getUsers().find(u => u.email === parsed.email);
+                if (latest && latest.allowed !== false) {
+                    startApp(latest);
+                    return;
+                } else {
+                    localStorage.removeItem(SESSION_KEY);
+                }
             }
+            switchRole('pelajar');
         });
 
-        // --- 3. NAVIGASI UTAMA ---
+        // --- NAVIGASI PELAJAR ---
         function switchPage(pageId, element) {
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.querySelectorAll('#main-app .nav-link').forEach(link => link.classList.remove('active'));
             if (element) element.classList.add('active');
             document.querySelectorAll('.page-section').forEach(section => {
                 section.classList.remove('active');
@@ -1089,7 +1513,7 @@
             updateStatDisplay();
         }
 
-        // --- 4. WIZARD: JURUSAN, MAPEL, KELAS ---
+        // --- WIZARD JADWAL ---
         const mapelData = {
             'IPA': [
                 { nama: 'Matematika', icon: '📐' }, { nama: 'Fisika', icon: '🍎' },
@@ -1152,7 +1576,6 @@
             });
         });
 
-        // --- 5. SIMPAN & RENDER JADWAL ---
         function simpanJadwalAkhir() {
             const waktu = document.getElementById('waktuInput').value;
             const durasi = parseInt(document.getElementById('durasiInput').value);
@@ -1200,7 +1623,7 @@
             });
         }
 
-        // --- 6. NOTIFIKASI H-5 MENIT & SUARA ALARM ---
+        // --- NOTIFIKASI H-5 MENIT & ALARM ---
         setInterval(() => {
             if (!currentUser) return;
             const now = new Date();
@@ -1231,7 +1654,7 @@
             } catch (e) {}
         }
 
-        // --- 7. TIMER MODAL ---
+        // --- TIMER MODAL ---
         let timerInterval, timeLeft = 0, isRunning = false, currentSesiObj = null;
 
         function openTimer(itemObj) {
@@ -1275,7 +1698,7 @@
             isRunning = false;
         }
 
-        // --- 8. EVALUASI & REFLEKSI ---
+        // --- EVALUASI & REFLEKSI ---
         function selesaikanTugas() {
             if (!currentSesiObj) return;
             userData.stats.tugasSelesai++;
