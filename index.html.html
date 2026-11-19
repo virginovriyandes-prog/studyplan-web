@@ -79,46 +79,49 @@
             height: 100vh;
             width: 100%;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* Mencegah bagian atas terpotong saat layar pendek */
             background: linear-gradient(135deg, #efeaff 0%, #dcd3ff 50%, #ffeef4 100%);
             position: fixed;
             top: 0; left: 0;
             z-index: 1000;
-            padding: 20px;
+            padding: 20px 16px 30px;
             transition: opacity 0.4s ease;
             overflow-y: auto;
         }
         #auth-wrapper::before, #auth-wrapper::after {
             content: '';
-            position: absolute;
+            position: fixed;
             border-radius: 50%;
             z-index: 0;
             filter: blur(2px);
+            pointer-events: none;
         }
-        #auth-wrapper::before { width: 260px; height: 260px; background: rgba(255, 209, 102, 0.35); top: -60px; left: -60px; }
-        #auth-wrapper::after { width: 300px; height: 300px; background: rgba(76, 201, 240, 0.25); bottom: -80px; right: -70px; }
+        #auth-wrapper::before { width: 240px; height: 240px; background: rgba(255, 209, 102, 0.35); top: -60px; left: -60px; }
+        #auth-wrapper::after { width: 280px; height: 280px; background: rgba(76, 201, 240, 0.25); bottom: -80px; right: -70px; }
 
         /* Pemilih Peran (Pelajar vs Admin) */
         .role-switcher {
             display: flex;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
-            padding: 6px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(124, 92, 255, 0.14);
-            border: 2px solid rgba(255, 255, 255, 0.9);
-            margin-bottom: 58px;
+            padding: 5px;
+            border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(124, 92, 255, 0.14);
+            border: 2px solid rgba(255, 255, 255, 0.95);
+            margin-top: auto;
+            margin-bottom: 46px;
             z-index: 3;
             gap: 6px;
+            flex-shrink: 0;
         }
         .role-btn {
-            padding: 10px 24px;
+            padding: 9px 22px;
             border: none;
-            border-radius: 15px;
+            border-radius: 14px;
             background: transparent;
             color: var(--text-muted);
             font-weight: 800;
-            font-size: 14px;
+            font-size: 13.5px;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
@@ -139,58 +142,61 @@
             background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(12px);
             width: 100%;
-            max-width: 420px;
-            padding: 58px 35px 35px;
-            border-radius: 32px;
-            box-shadow: 0 24px 60px rgba(124, 92, 255, 0.18), 0 0 0 6px rgba(255, 255, 255, 0.55);
+            max-width: 400px;
+            padding: 46px 28px 26px;
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(124, 92, 255, 0.16), 0 0 0 5px rgba(255, 255, 255, 0.55);
             text-align: center;
             display: none;
             position: relative;
             z-index: 2;
+            margin-bottom: auto;
+            flex-shrink: 0;
             animation: fadeIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .auth-card.active { display: block; }
         .auth-mascot-wrap {
             position: absolute;
-            top: -58px;
+            top: -42px;
             left: 50%;
             transform: translateX(-50%);
-            width: 110px;
-            height: 110px;
+            width: 84px;
+            height: 84px;
             background: #ffffff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 12px 28px rgba(124, 92, 255, 0.2);
-            border: 5px solid var(--primary-light);
+            box-shadow: 0 10px 24px rgba(124, 92, 255, 0.2);
+            border: 4px solid var(--primary-light);
         }
-        .auth-brand { font-size: 30px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+        .auth-mascot-wrap svg { width: 60px; height: 60px; }
+        .auth-brand { font-size: 26px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
         .auth-brand span { color: var(--primary); }
-        .auth-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 22px; line-height: 1.5; }
+        .auth-subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; line-height: 1.45; }
         
         .auth-alert {
             display: none;
-            padding: 12px 15px;
-            border-radius: 14px;
-            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 12.5px;
             font-weight: 700;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
             text-align: left;
         }
         .auth-alert.error { background: #fff1f2; color: #be123c; border: 2px solid #fecdd3; display: block; }
         .auth-alert.success { background: #ecfdf5; color: #047857; border: 2px solid #a7f3d0; display: block; }
 
-        .auth-input-group { margin-bottom: 14px; text-align: left; }
-        .auth-input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text-dark); }
+        .auth-input-group { margin-bottom: 11px; text-align: left; }
+        .auth-input-group label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; color: var(--text-dark); }
         .auth-input-group input {
             width: 100%;
-            padding: 13px 16px;
+            padding: 10px 14px;
             border: 2px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: 14px;
             outline: none;
             transition: 0.25s;
-            font-size: 14px;
+            font-size: 13.5px;
             background: #faf9ff;
             font-weight: 600;
         }
@@ -199,17 +205,17 @@
         /* Tombol 3D Bouncy */
         .btn-auth, .btn-action {
             width: 100%;
-            padding: 14px 20px;
+            padding: 12px 18px;
             background: linear-gradient(135deg, #8b6dff 0%, var(--primary) 100%);
             color: white;
             border: none;
             border-bottom: 4px solid var(--primary-dark);
-            border-radius: 16px;
+            border-radius: 14px;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 14.5px;
             cursor: pointer;
             transition: 0.2s ease;
-            margin-top: 8px;
+            margin-top: 6px;
         }
         .btn-auth.admin-submit {
             background: linear-gradient(135deg, #3c345c 0%, #2b2640 100%);
@@ -218,7 +224,7 @@
         .btn-auth:hover, .btn-action:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(124, 92, 255, 0.28); }
         .btn-auth:active, .btn-action:active { transform: translateY(2px); border-bottom-width: 2px; }
         
-        .auth-switch { margin-top: 20px; font-size: 13.5px; color: var(--text-muted); font-weight: 600; }
+        .auth-switch { margin-top: 14px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
         .auth-switch a { color: var(--primary); font-weight: 800; text-decoration: none; cursor: pointer; }
         .auth-switch a:hover { text-decoration: underline; }
 
@@ -733,7 +739,7 @@
         <!-- 3. HALAMAN LOGIN ADMIN -->
         <div class="auth-card" id="cardAdminLogin">
             <div class="auth-mascot-wrap" style="border-color: #dcd3ff; background: #2b2640;">
-                <span style="font-size: 46px;" class="mascot-float">🛡️</span>
+                <span style="font-size: 38px;" class="mascot-float">🛡️</span>
             </div>
             <div class="auth-brand">Admin <span>Panel</span></div>
             <p class="auth-subtitle">Akses khusus pengelola StudyPlan untuk monitoring & kontrol akses siswa.</p>
@@ -1139,7 +1145,6 @@
         // --- STORAGE HELPERS ---
         function getUsers() {
             const raw = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-            // Pastikan user lama tetap punya properti allowed = true
             return raw.map(u => ({ ...u, allowed: u.allowed !== false }));
         }
 
@@ -1198,7 +1203,6 @@
                 return;
             }
 
-            // CEK KUOTA MAKSIMAL 100 ORANG
             if (getActiveUsersCount() >= MAX_USERS) {
                 showAuthCard('register', `Kuota website penuh! Maksimal hanya ${MAX_USERS} pengguna yang dapat mengakses website ini. Hubungi Admin Jihan.`, 'error');
                 return;
@@ -1225,7 +1229,6 @@
                 return;
             }
 
-            // CEK APAKAH DIKELUARKAN OLEH ADMIN
             if (foundUser.allowed === false) {
                 showAuthCard('login', 'Akses ditolak! Akunmu telah dikeluarkan oleh Admin Jihan. Hubungi Admin untuk izin masuk kembali.', 'error');
                 return;
@@ -1358,7 +1361,6 @@
             const allowedUsers = users.filter(u => u.allowed !== false);
             const kickedUsers = users.filter(u => u.allowed === false);
 
-            // Hitung total menit fokus seluruh siswa
             let grandTotalMenit = 0;
             const enrichedUsers = users.map(u => {
                 const raw = localStorage.getItem(`studyplan_data_${u.email}`);
@@ -1367,7 +1369,6 @@
                 return { ...u, data: d };
             });
 
-            // Update Kuota & Stat
             const pct = Math.min(100, Math.round((allowedUsers.length / MAX_USERS) * 100));
             document.getElementById('adminQuotaText').innerText = `${allowedUsers.length} / ${MAX_USERS} Pengguna Aktif`;
             document.getElementById('adminQuotaBar').style.width = `${pct}%`;
@@ -1376,7 +1377,6 @@
             document.getElementById('admTotalKicked').innerText = kickedUsers.length;
             document.getElementById('admTotalMenit').innerText = grandTotalMenit;
 
-            // Render Daftar Pengguna yang Bisa Masuk (Tab Monitoring)
             const allowedContainer = document.getElementById('adminAllowedList');
             const activeList = enrichedUsers.filter(u => u.allowed !== false);
             if (activeList.length === 0) {
@@ -1395,7 +1395,6 @@
                 `).join('');
             }
 
-            // Render Semua Pengguna sesuai Filter (Tab Kelola Akses)
             const allContainer = document.getElementById('adminAllUsersList');
             const filtered = enrichedUsers.filter(u => {
                 if (adminFilter === 'allowed') return u.allowed !== false;
