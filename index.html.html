@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK (Cloud Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
     <style>
         /* === TEMA PLAYFUL PASTEL MODERN === */
         :root {
@@ -79,7 +84,7 @@
             height: 100vh;
             width: 100%;
             align-items: center;
-            justify-content: flex-start; /* Mencegah bagian atas terpotong saat layar pendek */
+            justify-content: flex-start;
             background: linear-gradient(135deg, #efeaff 0%, #dcd3ff 50%, #ffeef4 100%);
             position: fixed;
             top: 0; left: 0;
@@ -217,6 +222,7 @@
             transition: 0.2s ease;
             margin-top: 6px;
         }
+        .btn-auth:disabled, .btn-action:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
         .btn-auth.admin-submit {
             background: linear-gradient(135deg, #3c345c 0%, #2b2640 100%);
             border-bottom-color: #161324;
@@ -682,7 +688,7 @@
                     <label>Kata Sandi</label>
                     <input type="password" id="regPass" placeholder="Minimal 4 karakter" minlength="4" required>
                 </div>
-                <button type="submit" class="btn-auth">✨ Daftar Akun Pelajar</button>
+                <button type="submit" id="btnRegSubmit" class="btn-auth">✨ Daftar Akun Pelajar</button>
             </form>
 
             <div class="auth-switch">
@@ -728,7 +734,7 @@
                     <label>Kata Sandi</label>
                     <input type="password" id="loginPass" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn-auth">🚀 Masuk ke Dasbor</button>
+                <button type="submit" id="btnLoginSubmit" class="btn-auth">🚀 Masuk ke Dasbor</button>
             </form>
 
             <div class="auth-switch">
@@ -1032,7 +1038,7 @@
                 <a class="nav-link" onclick="switchAdminPage('admin-users', this)"><span>👥</span> Kelola Akses</a>
             </div>
             <div class="sidebar-mascot-tip" style="background: #f1eeff; border-color: #c7b8ff; color: var(--primary-dark);">
-                🛡️ Login sebagai: <strong>Jihan</strong><br>Batas Kuota: Maks. 100 Siswa
+                🛡️ Login sebagai: <strong>Jihan</strong><br>☁️ Cloud Sync Aktif (Maks. 100)
             </div>
             <div class="logout-desktop" style="padding: 0 16px;">
                 <a class="nav-link" style="color: var(--danger);" onclick="doAdminLogout()"><span>🚪</span> Keluar Admin</a>
@@ -1044,9 +1050,9 @@
             <section id="admin-monitor" class="admin-section active">
                 <div class="banner admin-banner">
                     <div style="z-index: 2;">
-                        <div class="banner-pill">🛡️ KONTROL PENGGUNA & KUOTA</div>
+                        <div class="banner-pill">☁️ REAL-TIME CLOUD MONITORING</div>
                         <h1 style="font-size: 30px; margin-bottom: 8px; font-weight: 700;">Halo, Admin Jihan!</h1>
-                        <p style="font-size: 14px; opacity: 0.9; max-width: 500px;">Pantau aktivitas belajar siswa, lihat siapa saja yang memiliki izin masuk, dan kelola kuota maksimal 100 pengguna.</p>
+                        <p style="font-size: 14px; opacity: 0.9; max-width: 500px;">Pantau seluruh siswa dari perangkat mana saja secara langsung, lihat siapa yang bisa masuk, dan kontrol kuota maksimal 100 pengguna.</p>
                     </div>
                     <div style="font-size: 64px; z-index:2;" class="mascot-float">📋</div>
                 </div>
@@ -1055,12 +1061,12 @@
                 <div class="eval-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <h3 style="font-size: 18px;">👥 Kuota Akses Pengguna Website</h3>
-                        <strong style="color: var(--primary); font-size: 18px;" id="adminQuotaText">0 / 100 Pengguna Aktif</strong>
+                        <strong style="color: var(--primary); font-size: 18px;" id="adminQuotaText">Memuat...</strong>
                     </div>
                     <div class="quota-bar-bg">
                         <div class="quota-bar-fill" id="adminQuotaBar"></div>
                     </div>
-                    <p style="font-size: 12.5px; color: var(--text-muted); font-weight: 600;" id="adminQuotaSub">Sisa kuota tersedia: 100 orang.</p>
+                    <p style="font-size: 12.5px; color: var(--text-muted); font-weight: 600;" id="adminQuotaSub">Menyinkronkan data dari cloud...</p>
 
                     <div class="stat-grid" style="margin-top: 20px;">
                         <div class="stat-box"><h3 id="admTotalAllowed">0</h3><p style="font-size: 13px; color: var(--text-muted); font-weight: 700;">Bisa Masuk</p></div>
@@ -1074,7 +1080,7 @@
                     <div class="section-title" style="margin-bottom: 14px;">
                         <span>✅ Daftar Pengguna yang Bisa Masuk ke Website</span>
                     </div>
-                    <div id="adminAllowedList"></div>
+                    <div id="adminAllowedList"><div style="text-align:center; padding:24px; color:var(--text-muted); font-weight:700;">⏳ Mengambil data dari Firebase...</div></div>
                 </div>
             </section>
 
@@ -1083,14 +1089,14 @@
                 <!-- Form Masukkan Pengguna Baru -->
                 <div class="eval-card">
                     <h2 style="margin-bottom: 6px; font-size: 22px;">➕ Masukkan Pengguna Baru</h2>
-                    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px; font-weight: 600;">Admin dapat langsung mendaftarkan siswa agar bisa masuk ke StudyPlan (maksimal 100 akun aktif).</p>
+                    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px; font-weight: 600;">Admin dapat langsung mendaftarkan siswa agar bisa masuk ke StudyPlan dari HP/laptop mereka (maksimal 100 akun aktif).</p>
                     <form onsubmit="adminAddUser(event)">
                         <div class="admin-form-grid">
                             <input type="text" id="admAddNama" placeholder="Nama Lengkap Siswa" required>
                             <input type="email" id="admAddEmail" placeholder="Email Siswa" required>
                             <input type="password" id="admAddPass" placeholder="Password (min. 4 huruf)" minlength="4" required>
                         </div>
-                        <button type="submit" class="btn-action" style="width: auto; padding: 12px 26px;">✅ Masukkan Pengguna</button>
+                        <button type="submit" id="btnAdminAdd" class="btn-action" style="width: auto; padding: 12px 26px;">✅ Masukkan Pengguna</button>
                     </form>
                 </div>
 
@@ -1102,7 +1108,7 @@
                         <button class="filter-pill" onclick="setAdminFilter('allowed', this)">✅ Bisa Masuk</button>
                         <button class="filter-pill" onclick="setAdminFilter('kicked', this)">🚫 Dikeluarkan</button>
                     </div>
-                    <div id="adminAllUsersList"></div>
+                    <div id="adminAllUsersList"><div style="text-align:center; padding:24px; color:var(--text-muted); font-weight:700;">⏳ Mengambil data dari Firebase...</div></div>
                 </div>
             </section>
         </div>
@@ -1111,18 +1117,34 @@
     <!-- TOAST NOTIFIKASI -->
     <div class="toast" id="toastNotif">🔔 <span>Notifikasi</span></div>
 
-    <!-- === JAVASCRIPT LOGIC === -->
+    <!-- === JAVASCRIPT LOGIC (FIREBASE CLOUD FIRESTORE) === -->
     <script>
-        // --- KONSTANTA ADMIN & KUOTA ---
+        // --- 1. KONFIGURASI FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXrH5oMbD-Mld2CC0EHyMEnkHVU1RNOVM",
+            authDomain: "studyplan-32e62.firebaseapp.com",
+            projectId: "studyplan-32e62",
+            storageBucket: "studyplan-32e62.firebasestorage.app",
+            messagingSenderId: "757109348818",
+            appId: "1:757109348818:web:c217fdd35930dc0e83500b"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const usersCol = db.collection('studyplan_users');
+
+        // --- KONSTANTA ADMIN & SESI ---
         const MAX_USERS = 100;
         const ADMIN_NAME = 'Jihan';
         const ADMIN_PASS = '123456';
-        const USERS_KEY = 'studyplan_users';
-        const SESSION_KEY = 'studyplan_session';
+        const SESSION_EMAIL_KEY = 'studyplan_session_email';
         const ADMIN_SESSION_KEY = 'studyplan_admin_session';
 
         let currentUser = null;
         let adminFilter = 'all';
+        let cachedAdminUsers = [];
+        let unsubscribeAdmin = null;
+        let unsubscribeStudent = null;
         let userData = { schedules: [], stats: { tugasSelesai: 0, menitFokus: 0 }, reflections: [] };
 
         // --- INTERAKSI MASKOT ---
@@ -1142,20 +1164,6 @@
             bubble.innerText = ucapanOwl[Math.floor(Math.random() * ucapanOwl.length)];
         }
 
-        // --- STORAGE HELPERS ---
-        function getUsers() {
-            const raw = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-            return raw.map(u => ({ ...u, allowed: u.allowed !== false }));
-        }
-
-        function saveUsers(users) {
-            localStorage.setItem(USERS_KEY, JSON.stringify(users));
-        }
-
-        function getActiveUsersCount() {
-            return getUsers().filter(u => u.allowed !== false).length;
-        }
-
         // --- SWITCH PERAN (PELAJAR / ADMIN) ---
         function switchRole(role) {
             document.getElementById('tabRolePelajar').classList.remove('active');
@@ -1165,8 +1173,7 @@
                 showAuthCard('admin');
             } else {
                 document.getElementById('tabRolePelajar').classList.add('active');
-                const users = getUsers();
-                showAuthCard(users.length === 0 ? 'register' : 'login');
+                showAuthCard('login');
             }
         }
 
@@ -1190,58 +1197,91 @@
             }
         }
 
-        // --- AUTENTIKASI PELAJAR ---
-        function doRegister(e) {
+        // --- AUTENTIKASI PELAJAR (FIREBASE CLOUD) ---
+        async function doRegister(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnRegSubmit');
             const nama = document.getElementById('regNama').value.trim();
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const pass = document.getElementById('regPass').value;
 
-            const users = getUsers();
-            if (users.some(u => u.email === email)) {
-                showAuthCard('register', 'Email ini sudah terdaftar! Silakan langsung masuk.', 'error');
-                return;
+            btn.disabled = true;
+            btn.innerText = '⏳ Mendaftarkan...';
+
+            try {
+                const existingDoc = await usersCol.doc(email).get();
+                if (existingDoc.exists) {
+                    showAuthCard('register', 'Email ini sudah terdaftar! Silakan langsung masuk.', 'error');
+                    return;
+                }
+
+                // Cek kuota maksimal 100 pengguna aktif di cloud
+                const activeSnap = await usersCol.where('allowed', '==', true).get();
+                if (activeSnap.size >= MAX_USERS) {
+                    showAuthCard('register', `Kuota website penuh! Maksimal hanya ${MAX_USERS} pengguna yang dapat mengakses website ini. Hubungi Admin Jihan.`, 'error');
+                    return;
+                }
+
+                await usersCol.doc(email).set({
+                    nama,
+                    email,
+                    pass,
+                    allowed: true,
+                    joinedAt: new Date().toLocaleDateString('id-ID'),
+                    schedules: [],
+                    stats: { tugasSelesai: 0, menitFokus: 0 },
+                    reflections: []
+                });
+
+                document.getElementById('formRegister').reset();
+                document.getElementById('loginEmail').value = email;
+                showAuthCard('login', 'Akun berhasil didaftarkan ke cloud! Silakan masuk dengan email dan sandimu.', 'success');
+            } catch (err) {
+                console.error(err);
+                showAuthCard('register', 'Gagal terhubung ke server database. Pastikan koneksi internet aktif.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '✨ Daftar Akun Pelajar';
             }
-
-            if (getActiveUsersCount() >= MAX_USERS) {
-                showAuthCard('register', `Kuota website penuh! Maksimal hanya ${MAX_USERS} pengguna yang dapat mengakses website ini. Hubungi Admin Jihan.`, 'error');
-                return;
-            }
-
-            users.push({ nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID') });
-            saveUsers(users);
-            document.getElementById('formRegister').reset();
-
-            document.getElementById('loginEmail').value = email;
-            showAuthCard('login', 'Akun berhasil didaftarkan! Silakan masuk dengan email dan sandimu.', 'success');
         }
 
-        function doLogin(e) {
+        async function doLogin(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnLoginSubmit');
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('loginPass').value;
 
-            const users = getUsers();
-            const foundUser = users.find(u => u.email === email);
+            btn.disabled = true;
+            btn.innerText = '⏳ Memeriksa akun...';
 
-            if (!foundUser) {
-                showAuthCard('login', 'Akses ditolak! Email belum terdaftar. Kamu wajib mendaftar akun terlebih dahulu.', 'error');
-                return;
+            try {
+                const docSnap = await usersCol.doc(email).get();
+                if (!docSnap.exists) {
+                    showAuthCard('login', 'Akses ditolak! Email belum terdaftar. Kamu wajib mendaftar akun terlebih dahulu.', 'error');
+                    return;
+                }
+
+                const foundUser = docSnap.data();
+                if (foundUser.allowed === false) {
+                    showAuthCard('login', 'Akses ditolak! Akunmu telah dikeluarkan oleh Admin Jihan. Hubungi Admin untuk izin masuk kembali.', 'error');
+                    return;
+                }
+
+                if (foundUser.pass !== pass) {
+                    showAuthCard('login', 'Kata sandi salah! Silakan coba lagi.', 'error');
+                    return;
+                }
+
+                localStorage.setItem(SESSION_EMAIL_KEY, foundUser.email);
+                document.getElementById('formLogin').reset();
+                startApp(foundUser);
+            } catch (err) {
+                console.error(err);
+                showAuthCard('login', 'Gagal terhubung ke server database. Periksa koneksi internetmu.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '🚀 Masuk ke Dasbor';
             }
-
-            if (foundUser.allowed === false) {
-                showAuthCard('login', 'Akses ditolak! Akunmu telah dikeluarkan oleh Admin Jihan. Hubungi Admin untuk izin masuk kembali.', 'error');
-                return;
-            }
-
-            if (foundUser.pass !== pass) {
-                showAuthCard('login', 'Kata sandi salah! Silakan coba lagi.', 'error');
-                return;
-            }
-
-            localStorage.setItem(SESSION_KEY, JSON.stringify(foundUser));
-            document.getElementById('formLogin').reset();
-            startApp(foundUser);
         }
 
         // --- AUTENTIKASI ADMIN ---
@@ -1269,11 +1309,35 @@
                 void adminApp.offsetWidth;
                 adminApp.style.opacity = '1';
                 switchAdminPage('admin-monitor', document.querySelectorAll('#admin-app .nav-link')[0]);
-                renderAdminDashboard();
+                listenAdminUsersRealtime();
             }, 300);
         }
 
+        function listenAdminUsersRealtime() {
+            if (unsubscribeAdmin) unsubscribeAdmin();
+            unsubscribeAdmin = usersCol.onSnapshot(snapshot => {
+                cachedAdminUsers = snapshot.docs.map(doc => {
+                    const d = doc.data();
+                    return {
+                        email: doc.id,
+                        nama: d.nama || 'Siswa',
+                        pass: d.pass || '',
+                        allowed: d.allowed !== false,
+                        joinedAt: d.joinedAt || '-',
+                        schedules: Array.isArray(d.schedules) ? d.schedules : [],
+                        stats: d.stats || { tugasSelesai: 0, menitFokus: 0 },
+                        reflections: Array.isArray(d.reflections) ? d.reflections : []
+                    };
+                });
+                renderAdminDashboard();
+            }, err => {
+                console.error(err);
+                showToast('⚠️ Gagal menyinkronkan data admin dari Firebase.');
+            });
+        }
+
         function doAdminLogout() {
+            if (unsubscribeAdmin) { unsubscribeAdmin(); unsubscribeAdmin = null; }
             localStorage.removeItem(ADMIN_SESSION_KEY);
             const authWrap = document.getElementById('auth-wrapper');
             const adminApp = document.getElementById('admin-app');
@@ -1308,66 +1372,84 @@
             renderAdminDashboard();
         }
 
-        // --- FITUR KONTROL ADMIN ---
-        function adminAddUser(e) {
+        // --- FITUR KONTROL ADMIN (FIREBASE CLOUD) ---
+        async function adminAddUser(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnAdminAdd');
             const nama = document.getElementById('admAddNama').value.trim();
             const email = document.getElementById('admAddEmail').value.trim().toLowerCase();
             const pass = document.getElementById('admAddPass').value;
 
-            const users = getUsers();
-            if (users.some(u => u.email === email)) {
-                showToast('⚠️ Email tersebut sudah terdaftar!');
-                return;
-            }
-            if (getActiveUsersCount() >= MAX_USERS) {
-                showToast(`🚫 Kuota penuh! Maksimal ${MAX_USERS} pengguna aktif.`);
-                return;
-            }
+            btn.disabled = true;
+            btn.innerText = '⏳ Menyimpan...';
 
-            users.push({ nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID') });
-            saveUsers(users);
-            e.target.reset();
-            renderAdminDashboard();
-            showToast(`✅ ${nama} berhasil dimasukkan ke website!`);
+            try {
+                const existing = await usersCol.doc(email).get();
+                if (existing.exists) {
+                    showToast('⚠️ Email tersebut sudah terdaftar!');
+                    return;
+                }
+                const activeCount = cachedAdminUsers.filter(u => u.allowed !== false).length;
+                if (activeCount >= MAX_USERS) {
+                    showToast(`🚫 Kuota penuh! Maksimal ${MAX_USERS} pengguna aktif.`);
+                    return;
+                }
+
+                await usersCol.doc(email).set({
+                    nama,
+                    email,
+                    pass,
+                    allowed: true,
+                    joinedAt: new Date().toLocaleDateString('id-ID'),
+                    schedules: [],
+                    stats: { tugasSelesai: 0, menitFokus: 0 },
+                    reflections: []
+                });
+
+                e.target.reset();
+                showToast(`✅ ${nama} berhasil dimasukkan ke website!`);
+            } catch (err) {
+                console.error(err);
+                showToast('❌ Gagal menambahkan pengguna ke database.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '✅ Masukkan Pengguna';
+            }
         }
 
-        function toggleUserAccess(email, allowStatus) {
-            const users = getUsers();
-            if (allowStatus && getActiveUsersCount() >= MAX_USERS) {
+        async function toggleUserAccess(email, allowStatus) {
+            const activeCount = cachedAdminUsers.filter(u => u.allowed !== false).length;
+            if (allowStatus && activeCount >= MAX_USERS) {
                 showToast(`🚫 Gagal! Kuota sudah mencapai batas ${MAX_USERS} pengguna.`);
                 return;
             }
-            const idx = users.findIndex(u => u.email === email);
-            if (idx !== -1) {
-                users[idx].allowed = allowStatus;
-                saveUsers(users);
-                renderAdminDashboard();
-                showToast(allowStatus ? `✅ Akses ${users[idx].nama} diizinkan kembali.` : `🚫 ${users[idx].nama} telah dikeluarkan dari website.`);
+            try {
+                await usersCol.doc(email).update({ allowed: allowStatus });
+                showToast(allowStatus ? `✅ Akses siswa diizinkan kembali.` : `🚫 Siswa telah dikeluarkan dari website.`);
+            } catch (err) {
+                console.error(err);
+                showToast('❌ Gagal mengubah status akses.');
             }
         }
 
-        function deleteUserAccount(email) {
-            if (!confirm('Hapus permanen akun dan seluruh data belajar siswa ini?')) return;
-            const users = getUsers().filter(u => u.email !== email);
-            saveUsers(users);
-            localStorage.removeItem(`studyplan_data_${email}`);
-            renderAdminDashboard();
-            showToast('🗑️ Akun pengguna berhasil dihapus permanen.');
+        async function deleteUserAccount(email) {
+            if (!confirm('Hapus permanen akun dan seluruh data belajar siswa ini dari database?')) return;
+            try {
+                await usersCol.doc(email).delete();
+                showToast('🗑️ Akun pengguna berhasil dihapus permanen.');
+            } catch (err) {
+                console.error(err);
+                showToast('❌ Gagal menghapus akun.');
+            }
         }
 
         function renderAdminDashboard() {
-            const users = getUsers();
+            const users = cachedAdminUsers;
             const allowedUsers = users.filter(u => u.allowed !== false);
             const kickedUsers = users.filter(u => u.allowed === false);
 
             let grandTotalMenit = 0;
-            const enrichedUsers = users.map(u => {
-                const raw = localStorage.getItem(`studyplan_data_${u.email}`);
-                const d = raw ? JSON.parse(raw) : { schedules: [], stats: { tugasSelesai: 0, menitFokus: 0 }, reflections: [] };
-                grandTotalMenit += (d.stats?.menitFokus || 0);
-                return { ...u, data: d };
-            });
+            users.forEach(u => { grandTotalMenit += (u.stats?.menitFokus || 0); });
 
             const pct = Math.min(100, Math.round((allowedUsers.length / MAX_USERS) * 100));
             document.getElementById('adminQuotaText').innerText = `${allowedUsers.length} / ${MAX_USERS} Pengguna Aktif`;
@@ -1378,15 +1460,14 @@
             document.getElementById('admTotalMenit').innerText = grandTotalMenit;
 
             const allowedContainer = document.getElementById('adminAllowedList');
-            const activeList = enrichedUsers.filter(u => u.allowed !== false);
-            if (activeList.length === 0) {
+            if (allowedUsers.length === 0) {
                 allowedContainer.innerHTML = `<div style="text-align:center; padding:26px; color:var(--text-muted); border:2px dashed var(--border-color); border-radius:16px; font-weight:700;">Belum ada pengguna yang terdaftar.</div>`;
             } else {
-                allowedContainer.innerHTML = activeList.map((u, i) => `
+                allowedContainer.innerHTML = allowedUsers.map((u, i) => `
                     <div class="user-row">
                         <div class="user-meta">
                             <h4>${i + 1}. ${u.nama} <span class="status-tag active">✅ Bisa Masuk</span></h4>
-                            <p>📧 ${u.email} • ⏳ ${u.data.stats.menitFokus} mnt fokus • ✅ ${u.data.stats.tugasSelesai} tugas • 📅 ${u.data.schedules.length} jadwal aktif</p>
+                            <p>📧 ${u.email} • ⏳ ${u.stats.menitFokus} mnt fokus • ✅ ${u.stats.tugasSelesai} tugas • 📅 ${u.schedules.length} jadwal aktif</p>
                         </div>
                         <div class="admin-actions">
                             <button class="btn-mini kick" onclick="toggleUserAccess('${u.email}', false)">🚫 Keluarkan</button>
@@ -1396,7 +1477,7 @@
             }
 
             const allContainer = document.getElementById('adminAllUsersList');
-            const filtered = enrichedUsers.filter(u => {
+            const filtered = users.filter(u => {
                 if (adminFilter === 'allowed') return u.allowed !== false;
                 if (adminFilter === 'kicked') return u.allowed === false;
                 return true;
@@ -1409,7 +1490,7 @@
                     <div class="user-row ${u.allowed ? '' : 'kicked'}">
                         <div class="user-meta">
                             <h4>${u.nama} <span class="status-tag ${u.allowed ? 'active' : 'kicked'}">${u.allowed ? '✅ Bisa Masuk' : '🚫 Dikeluarkan'}</span></h4>
-                            <p>📧 ${u.email} • ⏳ ${u.data.stats.menitFokus} mnt • ✅ ${u.data.stats.tugasSelesai} tugas • 📝 ${u.data.reflections.length} refleksi</p>
+                            <p>📧 ${u.email} • ⏳ ${u.stats.menitFokus} mnt • ✅ ${u.stats.tugasSelesai} tugas • 📝 ${u.reflections.length} refleksi</p>
                         </div>
                         <div class="admin-actions">
                             ${u.allowed
@@ -1423,10 +1504,14 @@
             }
         }
 
-        // --- APLIKASI PELAJAR ---
-        function startApp(user) {
-            currentUser = user;
-            loadUserData();
+        // --- APLIKASI PELAJAR (FIREBASE CLOUD + REAL-TIME SYNC) ---
+        function startApp(userDoc) {
+            currentUser = { nama: userDoc.nama, email: userDoc.email };
+            userData = {
+                schedules: Array.isArray(userDoc.schedules) ? userDoc.schedules : [],
+                stats: userDoc.stats || { tugasSelesai: 0, menitFokus: 0 },
+                reflections: Array.isArray(userDoc.reflections) ? userDoc.reflections : []
+            };
 
             const authWrap = document.getElementById('auth-wrapper');
             const mainApp = document.getElementById('main-app');
@@ -1442,11 +1527,49 @@
                 renderJadwal();
                 renderRefleksi();
                 updateStatDisplay();
+                listenStudentRealtime(currentUser.email);
             }, 300);
         }
 
+        function listenStudentRealtime(email) {
+            if (unsubscribeStudent) unsubscribeStudent();
+            unsubscribeStudent = usersCol.doc(email).onSnapshot(doc => {
+                if (!doc.exists || doc.data().allowed === false) {
+                    // Jika Admin Jihan mengeluarkan atau menghapus akun saat siswa sedang aktif
+                    forceLogoutByAdmin();
+                    return;
+                }
+                const d = doc.data();
+                userData = {
+                    schedules: Array.isArray(d.schedules) ? d.schedules : [],
+                    stats: d.stats || { tugasSelesai: 0, menitFokus: 0 },
+                    reflections: Array.isArray(d.reflections) ? d.reflections : []
+                };
+                renderJadwal();
+                renderRefleksi();
+                updateStatDisplay();
+            });
+        }
+
+        function forceLogoutByAdmin() {
+            if (unsubscribeStudent) { unsubscribeStudent(); unsubscribeStudent = null; }
+            localStorage.removeItem(SESSION_EMAIL_KEY);
+            currentUser = null;
+            clearInterval(timerInterval);
+            closeTimer();
+
+            const authWrap = document.getElementById('auth-wrapper');
+            const mainApp = document.getElementById('main-app');
+            mainApp.style.display = 'none';
+            authWrap.style.display = 'flex';
+            authWrap.style.opacity = '1';
+            switchRole('pelajar');
+            showAuthCard('login', 'Sesi dihentikan! Akunmu telah dikeluarkan oleh Admin Jihan.', 'error');
+        }
+
         function doLogout() {
-            localStorage.removeItem(SESSION_KEY);
+            if (unsubscribeStudent) { unsubscribeStudent(); unsubscribeStudent = null; }
+            localStorage.removeItem(SESSION_EMAIL_KEY);
             currentUser = null;
             clearInterval(timerInterval);
 
@@ -1463,36 +1586,38 @@
             }, 300);
         }
 
-        function getDataKey() { return `studyplan_data_${currentUser.email}`; }
-
-        function loadUserData() {
-            const raw = localStorage.getItem(getDataKey());
-            if (raw) {
-                userData = JSON.parse(raw);
-            } else {
-                userData = { schedules: [], stats: { tugasSelesai: 0, menitFokus: 0 }, reflections: [] };
+        async function saveUserData() {
+            if (!currentUser) return;
+            try {
+                await usersCol.doc(currentUser.email).update({
+                    schedules: userData.schedules,
+                    stats: userData.stats,
+                    reflections: userData.reflections
+                });
+            } catch (err) {
+                console.error(err);
+                showToast('⚠️ Gagal menyimpan ke cloud. Periksa internetmu.');
             }
         }
 
-        function saveUserData() {
-            if (!currentUser) return;
-            localStorage.setItem(getDataKey(), JSON.stringify(userData));
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
+        // Cek sesi tersimpan saat halaman dibuka
+        window.addEventListener('DOMContentLoaded', async () => {
             if (localStorage.getItem(ADMIN_SESSION_KEY) === 'true') {
                 startAdminApp();
                 return;
             }
-            const savedSession = localStorage.getItem(SESSION_KEY);
-            if (savedSession) {
-                const parsed = JSON.parse(savedSession);
-                const latest = getUsers().find(u => u.email === parsed.email);
-                if (latest && latest.allowed !== false) {
-                    startApp(latest);
-                    return;
-                } else {
-                    localStorage.removeItem(SESSION_KEY);
+            const savedEmail = localStorage.getItem(SESSION_EMAIL_KEY);
+            if (savedEmail) {
+                try {
+                    const doc = await usersCol.doc(savedEmail).get();
+                    if (doc.exists && doc.data().allowed !== false) {
+                        startApp(doc.data());
+                        return;
+                    } else {
+                        localStorage.removeItem(SESSION_EMAIL_KEY);
+                    }
+                } catch (e) {
+                    console.error(e);
                 }
             }
             switchRole('pelajar');
